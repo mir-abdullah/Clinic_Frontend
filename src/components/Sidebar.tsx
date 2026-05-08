@@ -1,4 +1,5 @@
 import { sidebarItems } from "@/utils/data"
+import Link from "next/link"
 
 export const Sidebar =()=>{
     return(
@@ -12,9 +13,19 @@ export const Sidebar =()=>{
                 <div className="text-sm  text-(--text-light) ml-15">Caring For Your Smile </div>
             </div>
             <nav>
-                <ul>
+                <ul className="px-3">
                     {
-                        
+                        sidebarItems.map((item)=>{
+                            return(
+                                <li key={item.value} className="flex items-center gap-3 px-6 py-3 text-(--text-primary) hover:bg-(--bg-secondary) cursor-pointer">
+                                    <Link href={item.route}>
+                                    <span>{item.icon}</span>
+                                    <span>{item.value}</span>
+                                    </Link>
+                                </li>
+                            ) 
+                        })
+
                     }
                 </ul>
 
