@@ -7,13 +7,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Appointment } from "@/utils/data";
+import { Appointment, formatDateWithOrdinal } from "@/utils/data";
 import Link from "next/link";
 
 
 export const ScheduleSection = ({appointments}: {appointments: Appointment[]}) => {
   return (
-    <Card>
+    <Card className="lg:w-255">
         <CardContent>
             <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold text-(--text-primary)">Today&apos;s Schedule</h2>
@@ -48,7 +48,7 @@ export const ScheduleSection = ({appointments}: {appointments: Appointment[]}) =
                             <TableRow key={appointment.id} className="border-border hover:bg-(--bg-secondary) transition-colors">
                                 <TableCell className="text-(--text-primary) font-medium">{appointment.patient.name}</TableCell>
                                 <TableCell className="text-(--text-secondary)">{appointment.patient.phone || "N/A"}</TableCell>
-                                <TableCell className="text-(--text-secondary)">{appointment.appointmentDate.toLocaleDateString()}</TableCell>
+                                <TableCell className="text-(--text-secondary)">{formatDateWithOrdinal(appointment.appointmentDate)}</TableCell>
                                 <TableCell className="text-(--text-secondary)">{appointment.appointmentTime}</TableCell>
                                 <TableCell className="text-(--text-secondary)">{appointment.purpose}</TableCell>
                             </TableRow>

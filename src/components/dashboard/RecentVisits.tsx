@@ -9,14 +9,16 @@ import {
 } from "@/components/ui/table"
 import { Visit } from "@/utils/data";
 import Link from "next/link";
+import { formatDateWithOrdinal } from "@/utils/data";
 
 
 export const RecentVisits = ({visits}:{visits:Visit[]}) => {
+
   return (
     <Card>
         <CardContent>
             <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-(--text-primary)">Today&apos;s Schedule</h2>
+                <h2 className="text-lg font-semibold text-(--text-primary)">Recent Visits</h2>
                 <Link href="/visits" className="text-sm text-blue-500 font-medium hover:underline">
                     View All
                 </Link>
@@ -53,9 +55,9 @@ export const RecentVisits = ({visits}:{visits:Visit[]}) => {
                     <TableBody>
                         {visits.map((visit, index) => (
                             <TableRow key={index} className="border-border hover:bg-(--bg-secondary) transition-colors">
-                                <TableCell className="text-(--text-primary) font-medium">{visit.patient.name}</TableCell>
-                                <TableCell className="text-(--text-secondary)">{visit.patient.phone || "N/A"}</TableCell>
-                                <TableCell className="text-(--text-secondary)">{visit.visitDate.toLocaleDateString()}</TableCell>
+                                <TableCell className="text-(--text-primary) font-medium">{visit.patient?.name ?? "N/A"}</TableCell>
+                                <TableCell className="text-(--text-secondary)">{visit.patient?.phone ?? "N/A"}</TableCell>
+                                <TableCell className="text-(--text-secondary)">{formatDateWithOrdinal(visit.visitDate)}</TableCell>
                                 <TableCell className="text-(--text-secondary)">{visit.visitTime }</TableCell>
                                 <TableCell className="text-(--text-secondary)">{visit.serviceRendered}</TableCell>
                                 <TableCell className="text-(--text-secondary)">Rs.{visit.totalBill.toFixed(2)}</TableCell>

@@ -4,7 +4,7 @@ import { StatsCard } from "@/components/dashboard/StatsCard"
 import { ScheduleSection } from "@/components/dashboard/ScheduleSection"
 import { Action, Appointment, Visit } from "@/utils/data"
 import { quickActions } from "@/utils/data";
-import { QuickActionsClient } from "./quickActions";
+import { QuickActionsClient } from "../dashboard/quickActions";
 import { RecentVisits } from "@/components/dashboard/RecentVisits";
 import { WeeklyPatientCount } from "@/components/dashboard/WeeklyPaitentCount";
 export default function VisitsPage() {

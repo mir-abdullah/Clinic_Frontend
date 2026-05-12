@@ -15,14 +15,13 @@ export const StatsCard = ({
     <Card
       className="
         bg-(--bg-primary)
-        border border-border
         rounded-[16px]
         px-6 py-5
         transition-all duration-300 ease-out
         hover:-translate-y-0.5
         hover:shadow-[0_12px_30px_rgba(0,0,0,0.08)]
         cursor-pointer
-        w-100
+        w-90
       "
     >
       <CardContent className="p-0">
@@ -40,7 +39,7 @@ export const StatsCard = ({
               bg-(--bg-secondary)
             "
           >
-            {icon}
+           <span className="text-lg">{icon}</span>
           </div>
         </div>
 

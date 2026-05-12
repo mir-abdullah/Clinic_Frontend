@@ -25,7 +25,7 @@ export const QuickActions = ({ actions, onActionClick }: QuickActionsProps) => {
               {actions.map((action) => {
                 const content = (
                   <div className="flex items-center gap-2 mb-4 p-2 hover:bg-blue-300 rounded-md bg-(--bg-secondary) transition-colors cursor-pointer">
-                    <span className="text-2xl bg-blue-300 p-2 rounded-md">
+                    <span className="text-2xl bg-[#6898cd] p-2 rounded-md">
                       {action.icon}
                     </span>
                     <div>
