@@ -65,13 +65,14 @@ export type Visit = {
 };
 
 export type Patient = {
-  id: number;
+  id?: number;
   name: string;
-  dateOfBirth: string;
+  dateOfBirth?: string;
   age?: number;
   guardianName?: string;
   phoneNumber?: string;
   address?: string;
+  notes?: string;
   occupation?: string;
   doctorName?: string;
   referredBy?: string;

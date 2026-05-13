@@ -12,7 +12,6 @@ export default async function DashboardPage() {
     const numberOfAppointmentsToday = await API.get("/appointment/today/count")
     const numberOfpatientsMonth = await API.get("/patient/total-count")
     const monthlyRevenue = await API.get("/visit/revenue/monthly")
-    const totalPendingPayments = await API.get("/visit/pending/payments/total")
     const appointmentsForToday = await API.get("/appointment/today")
     const last5Visits = await API.get("/visit/last-5")
 
@@ -39,8 +38,8 @@ export default async function DashboardPage() {
             <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
                 <StatsCard title="Today's Appointments" value={numberOfAppointmentsToday.data} icon="📅" description="Number of visits today"/>
                 <StatsCard title="Patients This Month" value={numberOfpatientsMonth.data} icon="👥" description="Number of patients this month"/>
-                <StatsCard title="Monthly Revenue" value={`Rs.${monthlyRevenue.data}`} icon="💰" description="Revenue generated this month"/>
-                <StatsCard title="Pending Payments" value={`Rs.${totalPendingPayments.data}`} icon="⏳" description="Total pending payments"/>
+                <StatsCard title="Monthly Revenue" value={`Rs.${monthlyRevenue?.data?.total /1000 || 0}K`} icon="💰" description="Revenue generated this month"/>
+                <StatsCard title="Pending Payments" value={`Rs.${monthlyRevenue?.data?.pending /1000 || 0}K`} icon="⏳" description="Total pending payments"/>
 
             </div>
             <div className=" flex gap-3 ">

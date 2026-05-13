@@ -17,7 +17,7 @@ export default async function PatientsPage() {
                       </div>
                       <PatientButtons />
                     </div>
-            <div className="mt-6">
+            <div className="mt-10">
                 <PatientTable patientsList={patients?.data?.patients} />
             </div>
         </div>
