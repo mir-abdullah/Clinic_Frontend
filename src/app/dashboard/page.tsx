@@ -5,6 +5,7 @@ import { StatsCard } from "@/components/dashboard/StatsCard";
 import { ScheduleSection } from "@/components/dashboard/ScheduleSection";
 import { quickActions } from "@/utils/data";
 import { QuickActionsClient } from "./quickActions";
+import { patientAPI } from "@/utils/api";
 
 export default async function DashboardPage() {
 
