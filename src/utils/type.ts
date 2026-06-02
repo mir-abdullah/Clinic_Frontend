@@ -30,8 +30,6 @@ export type Appointment = {
 
 };
 
-
-
 export type Visit = {
   id: number;
   visitId?: number;

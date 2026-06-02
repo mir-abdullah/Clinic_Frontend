@@ -105,7 +105,8 @@ export type Action={
         }
     };
 
-  export   const formatDateWithOrdinal = (value: Date | string) => {
+  export   const formatDateWithOrdinal = (value: Date | string | null | undefined) => {
+        if (!value) return "";
         const d = typeof value === "string" ? new Date(value) : value;
         if (Number.isNaN(d.getTime())) return "Invalid date";
         const day = d.getDate();

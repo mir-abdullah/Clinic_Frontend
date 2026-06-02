@@ -44,8 +44,8 @@ export const RecentVisits = ({visits}:{visits:Visit[]}) => {
                             <TableHead className="text-(--text-primary) font-semibold bg-(--bg-secondary)">Time</TableHead>
                             <TableHead className="text-(--text-primary) font-semibold bg-(--bg-secondary)">Service Rendered</TableHead>
                             <TableHead className="text-(--text-primary) font-semibold bg-(--bg-secondary)">Total Bill</TableHead>
-                            <TableHead className="text-(--text-primary) font-semibold bg-(--bg-secondary)">Credit Amount</TableHead>
-                            <TableHead className="text-(--text-primary) font-semibold bg-(--bg-secondary)">Balance Amount</TableHead>
+                            <TableHead className="text-(--text-primary) font-semibold bg-(--bg-secondary)">Paid Amount</TableHead>
+                            <TableHead className="text-(--text-primary) font-semibold bg-(--bg-secondary)">Due Amount</TableHead>
                             <TableHead className="text-(--text-primary) font-semibold bg-(--bg-secondary)">Payment Status</TableHead>
 
                             

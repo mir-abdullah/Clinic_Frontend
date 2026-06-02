@@ -19,7 +19,13 @@ export const patientAPI = axios.create({
 })
 
 export const appointmentAPI = axios.create({
-    baseURL: "http://localhost:5000/api/appointment",
+    baseURL: "http://localhost:5000/api/appointments",
+    withCredentials: true,
+  
+})
+
+export const paymentAPI =axios.create({
+    baseURL: "http://localhost:5000/api/payments",
     withCredentials: true,
   
 })

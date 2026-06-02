@@ -6,15 +6,18 @@ import { ScheduleSection } from "@/components/dashboard/ScheduleSection";
 import { quickActions } from "@/utils/data";
 import { QuickActionsClient } from "./quickActions";
 import { patientAPI } from "@/utils/api";
+import { appointmentAPI } from "@/utils/api";
+import { visitAPI } from "@/utils/api";
 
 export default async function DashboardPage() {
 
     //api calls
-    const numberOfAppointmentsToday = await API.get("/appointment/today/count")
-    const numberOfpatientsMonth = await API.get("/patient/total-count")
-    const monthlyRevenue = await API.get("/visit/revenue/monthly")
-    const appointmentsForToday = await API.get("/appointment/today")
-    const last5Visits = await API.get("/visit/last-5")
+    const appointmentsToday = await appointmentAPI.get("/today")
+    const numberOfpatientsMonth = await patientAPI.get("/total/count/month")
+    const monthlyRevenue = await visitAPI.get("/monthly/revenue")
+    const last5Visits = await visitAPI.get("/recent/5")
+
+    
 
 
  
@@ -37,18 +40,18 @@ export default async function DashboardPage() {
         </div>
         <div className="flex flex-col gap-3">
             <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                <StatsCard title="Today's Appointments" value={numberOfAppointmentsToday.data} icon="📅" description="Number of visits today"/>
-                <StatsCard title="Patients This Month" value={numberOfpatientsMonth.data} icon="👥" description="Number of patients this month"/>
-                <StatsCard title="Monthly Revenue" value={`Rs.${monthlyRevenue?.data?.total /1000 || 0}K`} icon="💰" description="Revenue generated this month"/>
-                <StatsCard title="Pending Payments" value={`Rs.${monthlyRevenue?.data?.pending /1000 || 0}K`} icon="⏳" description="Total pending payments"/>
+                <StatsCard title="Today's Appointments" value={appointmentsToday?.data?.total || 0} icon="📅" description="Number of visits today"/>
+                <StatsCard title="Patients This Month" value={numberOfpatientsMonth?.data?.totalPatientsThisMonth} icon="👥" description="Number of patients this month"/>
+                <StatsCard title="Monthly Revenue" value={`Rs.${monthlyRevenue?.data?.totalRevenue /1000 || 0}K`} icon="💰" description="Revenue generated this month"/>
+                <StatsCard title="Pending Payments" value={`Rs.${monthlyRevenue?.data?.pendingRevenue /1000 || 0}K`} icon="⏳" description="Total pending payments"/>
 
             </div>
             <div className=" flex gap-3 ">
-                <ScheduleSection  appointments={appointmentsForToday.data } />
+                <ScheduleSection  appointments={appointmentsToday?.data?.appointments} />
                 <QuickActionsClient actions={quickActions} />
             </div>
             <div className="lg:mr-3 ">
-                <RecentVisits visits={last5Visits.data} />
+                <RecentVisits visits={last5Visits?.data || []} />
                 {/* <WeeklyPatientCount /> */}
             </div>
         </div>
