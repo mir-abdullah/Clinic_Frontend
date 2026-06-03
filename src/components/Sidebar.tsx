@@ -10,7 +10,7 @@ export const Sidebar =()=>{
     }
 
     return (
-      <aside className="w-75  bg-(--bg-primary) border-r border-(--border) h-screen overflow-y-auto ">
+      <aside className="w-75  bg-(--bg-primary) border-r border-(--border) h-full overflow-y-auto ">
         <div className="p-6 mb-6 border-b border-(--border)">
           <div className="flex gap-3 items-center mb-1">
             <div className="w-12 h-12 rounded-md bg-[linear-gradient(135deg,var(--primary)_0%,var(--primary-dark)_100%)] flex items-center justify-center text-white text-xl font-semibold">

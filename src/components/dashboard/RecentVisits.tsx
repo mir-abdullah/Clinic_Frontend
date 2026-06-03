@@ -7,9 +7,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Visit } from "@/utils/data";
+import { Visit } from "@/utils/type";
 import Link from "next/link";
-import { formatDateWithOrdinal } from "@/utils/data";
+import { formatDateWithOrdinal } from "@/utils/helpers";
 
 
 export const RecentVisits = ({visits}:{visits:Visit[]}) => {
@@ -57,15 +57,21 @@ export const RecentVisits = ({visits}:{visits:Visit[]}) => {
                             <TableRow key={index} className="border-border hover:bg-(--bg-secondary) transition-colors">
                                 <TableCell className="text-(--text-primary) font-medium">{visit.patient?.name ?? "N/A"}</TableCell>
                                 <TableCell className="text-(--text-secondary)">{visit.patient?.phone ?? "N/A"}</TableCell>
-                                <TableCell className="text-(--text-secondary)">{formatDateWithOrdinal(visit.visitDate)}</TableCell>
-                                <TableCell className="text-(--text-secondary)">{visit.visitTime }</TableCell>
-                                <TableCell className="text-(--text-secondary)">{visit.serviceRendered}</TableCell>
-                                <TableCell className="text-(--text-secondary)">Rs.{visit.totalBill.toFixed(2)}</TableCell>
-                                <TableCell className="text-(--text-secondary)">Rs.{visit.creditAmount.toFixed(2)}</TableCell>
-                                <TableCell className="text-(--text-secondary)">Rs.{visit.balanceAmount.toFixed(2)}</TableCell>
+                                <TableCell className="text-(--text-secondary)">{formatDateWithOrdinal(visit.date)}</TableCell>
+                                <TableCell className="text-(--text-secondary)">{visit.time }</TableCell>
+                                <TableCell className="text-(--text-secondary)">{visit.reason}</TableCell>
+                                <TableCell className="text-(--text-secondary)">Rs.{visit.totalAmount.toFixed(2)}</TableCell>
+                                <TableCell className="text-(--text-secondary)">Rs.{visit.paidAmount.toFixed(2)}</TableCell>
+                                <TableCell className="text-(--text-secondary)">Rs.{visit.dueAmount.toFixed(2)}</TableCell>
                                 
-                                <TableCell className={visit.balanceAmount === 0 ? "text-green-500 font-semibold" : "text-red-500 font-semibold"}>
-                                    {visit.balanceAmount === 0 ? "Paid" : "Pending"}
+                                <TableCell className="text-(--text-secondary)">
+                                    {visit.paymentStatus === "PAID" ? (
+                                        <span className="text-green-600 font-medium">Paid</span>
+                                    ) : visit.paymentStatus === "PARTIAL" ? (
+                                        <span className="text-yellow-600 font-medium">Partial</span>
+                                    ) : (
+                                        <span className="text-red-600 font-medium">Pending</span>
+                                    )}
                                 </TableCell>
                             </TableRow>
                         ))}

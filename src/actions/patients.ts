@@ -1,4 +1,4 @@
-import { Patient } from "@/utils/data";
+import { Patient } from "@/utils/type";
 export async function addPatient(prevData:Patient ,formData:FormData){
     const name = formData.get("fullName") as string;
     const age = formData.get("age") as string;
@@ -11,11 +11,11 @@ export async function addPatient(prevData:Patient ,formData:FormData){
     const newPatient: Patient = {
         name,
         age: parseInt(age),
-        guardianName,
-        phoneNumber,
+        guardian: guardianName,
+        phone: phoneNumber,
         address,
         occupation,
-        notes: medicalHistory,
+        medicalHistory,
         
     };
     

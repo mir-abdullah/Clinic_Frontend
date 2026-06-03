@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { QuickActions } from "@/components/dashboard/QuickActions";
-import { Action } from "@/utils/data";
+import { Action } from "@/utils/type";
 
 type Props = {
   actions: Action[];

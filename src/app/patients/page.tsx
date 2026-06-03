@@ -1,11 +1,10 @@
 import { PatientButtons } from "@/components/patients/PatientButtons"
 import { PatientTable } from "@/components/patients/PatientTable"
-import { API } from "@/utils/api"
-import { Patient } from "@/utils/data"
+import { patientAPI } from "@/utils/api"
+import { Patient } from "@/utils/type"
 export default async function PatientsPage() {
     
-    const patients =await API.get("/patient/all")
-    console.log("patient",patients.data.patients)
+    const patients =await patientAPI.get("/all")
     return (
         <div>
             <div className="flex  gap-4 flex-start">

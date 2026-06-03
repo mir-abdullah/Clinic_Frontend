@@ -1,4 +1,4 @@
-import { Visit } from "@/utils/data";
+import { Visit } from "@/utils/type";
 import {
   Table,
   TableBody,
@@ -59,26 +59,26 @@ export const VisitTable = ({ visitsList }: { visitsList: Visit[] }) => {
                     {visit.patient?.name || "N/A"}
                   </TableCell>
                   <TableCell className="text-(--text-primary) py-2">
-                    {visit?.visitDate || "N/A"}
+                    {visit?.date || "N/A"}
                   </TableCell>
                   <TableCell className="text-(--text-primary) py-2">
-                    {visit.visitTime || "N/A"}
+                    {visit.time || "N/A"}
                   </TableCell>
                   <TableCell className="text-(--text-primary) py-2">
-                    {visit.serviceRendered || "N/A"}
+                    {visit.reason || "N/A"}
                   </TableCell>
 
                   <TableCell className="text-(--text-primary) py-2">
-                    {visit.totalBill}
+                    {visit.totalAmount.toFixed(2)}
                   </TableCell>
                   <TableCell className="text-(--text-primary) py-2">
-                    {visit.creditAmount}
+                    {visit.paidAmount.toFixed(2)}
                   </TableCell>
                   <TableCell className="text-(--text-primary) py-2">
-                    {visit.balanceAmount}
+                    {visit.dueAmount.toFixed(2)}
                   </TableCell>
-                    <TableCell className={`py-2 font-medium ${visit.balanceAmount > 0 ? "text-red-500" : "text-green-500"}`}>
-                    {visit.balanceAmount > 0 ? "Pending" : "Paid"}
+                    <TableCell className={`py-2 font-medium ${visit.dueAmount > 0 ? "text-red-500" : "text-green-500"}`}>
+                    {visit.dueAmount > 0 ? "Pending" : "Paid"}
                   </TableCell>
                   
                 </TableRow>

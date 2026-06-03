@@ -1,17 +1,17 @@
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { ReportButton } from "@/components/visits/ReportButton";
 import { VisitTable } from "@/components/visits/VisitTable";
-import { API } from "@/utils/api";
+import { API, visitAPI } from "@/utils/api";
 
 export default async function VisitsPage() {
 
-      const monthlyStats = await API.get("/visit/revenue/monthly")
-      const visitsList = await API.get("/visit/all")
+      const monthlyStats = await visitAPI.get("/MonthlyStats")
+      const visitsList = await visitAPI.get("/all")
 
-      const monthlyRevenue = monthlyStats?.data?.total || 0;
-      const collectedRevenue = monthlyStats?.data?.collected || 0;
-      const pendingRevenue = monthlyStats?.data?.pending || 0;
-      const visitCount = monthlyStats?.data?.visitCount || 0;
+      const monthlyRevenue = monthlyStats?.data?.totalRevenue || 0; 
+      const collectedRevenue = monthlyStats?.data?.revenueCollected || 0;
+      const pendingRevenue = monthlyStats?.data?.dueAmount || 0;
+      const visitCount = monthlyStats?.data?.totalVisits || 0;
   
    
   return (

@@ -1,6 +1,6 @@
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Action } from "@/utils/data";
+import { Action } from "@/utils/type";
 import Link from "next/link";
 
 type QuickActionsProps = {
