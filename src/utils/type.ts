@@ -16,6 +16,22 @@ export type Patient = {
   appointments?: Appointment[];
 };
 
+export type createPatientDTO = {
+  name: string;
+  age: number;
+  phone: string;
+  address: string;
+  gender?: string;
+  guardian?: string;
+  occupation?: string;
+  medicalHistory?: string;
+};
+
+export type AddPatientActionState = {
+  status: "idle" | "error" | "success";
+  message: string;
+};
+
 export type Appointment = {
   id: string;
   patientId: string;

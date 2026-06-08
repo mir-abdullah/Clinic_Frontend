@@ -12,14 +12,18 @@ import {
   Clock,
 } from "lucide-react";
 import { IMaskInput } from "react-imask";
-import { useState, useActionState } from "react";
+import { useActionState, useEffect, useState } from "react";
+import { AddPatientActionState } from "@/utils/type";
+import { addPatient } from "@/actions/patients";
 
 export const AddPatient = ({
-  open,
-  onClose,
+  open = true,
+  onClose = () => {},
+  onSuccess = () => {},
 }: {
-  open: boolean;
-  onClose: () => void;
+  open?: boolean;
+  onClose?: () => void;
+  onSuccess?: (message: string) => void;
 }) => {
   const [formData, setFormData] = useState({
     fullName: "",
@@ -32,17 +36,36 @@ export const AddPatient = ({
     medicalHistory: "",
   });
 
-  
-
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [phoneError, setPhoneError] = useState<string>("");
+  const [formState, formAction, isPending] = useActionState<
+    AddPatientActionState,
+    FormData
+  >(
+    addPatient,
+    { status: "idle", message: "" },
+  );
+
+  useEffect(() => {
+    if (formState.status === "success") {
+      onSuccess(formState.message);
+      onClose();
+    }
+  }, [formState.status, formState.message, onClose, onSuccess]);
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  if (!open) {
+    return null;
+  }
+
   return (
-    <form className="max-w-4xl w-full bg-gradient-to-br from-white via-slate-50/30 to-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] border border-slate-200/60">
+    <form
+      action={formAction}
+      className="max-w-4xl w-full bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] border border-slate-200/60"
+    >
       {/* Header */}
       <div className="relative px-8 py-6 bg-[var(--primary-dark)] text-white overflow-hidden">
         <div className="absolute inset-0 opacity-10">
@@ -69,6 +92,7 @@ export const AddPatient = ({
           </div>
 
           <button
+            type="button"
             className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 flex items-center justify-center transition-all hover:scale-105 active:scale-95"
             aria-label="Close modal"
             onClick={onClose}
@@ -80,6 +104,12 @@ export const AddPatient = ({
 
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar">
+        {formState.status === "error" && (
+          <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
+            {formState.message}
+          </div>
+        )}
+
         {/* Patient Information Section */}
         <section className="space-y-4">
           <div className="flex items-center gap-3">
@@ -106,6 +136,7 @@ export const AddPatient = ({
                     <User className="w-5 h-5" strokeWidth={2} />
                   </div>
                   <input
+                    name="name"
                     type="text"
                     value={formData.fullName}
                     onChange={(e) => handleChange("fullName", e.target.value)}
@@ -129,6 +160,7 @@ export const AddPatient = ({
                     <Calendar className="w-5 h-5" strokeWidth={2} />
                   </div>
                   <input
+                    name="age"
                     type="number"
                     value={formData.age}
                     onChange={(e) => handleChange("age", e.target.value)}
@@ -151,6 +183,7 @@ export const AddPatient = ({
                   Gender <span className="text-rose-500 font-bold">*</span>
                 </label>
                 <select
+                  name="gender"
                   value={formData.gender}
                   onChange={(e) => handleChange("gender", e.target.value)}
                   onFocus={() => setFocusedField("gender")}
@@ -180,6 +213,7 @@ export const AddPatient = ({
                     <Briefcase className="w-5 h-5" strokeWidth={2} />
                   </div>
                   <input
+                    name="occupation"
                     type="text"
                     value={formData.occupation}
                     onChange={(e) => handleChange("occupation", e.target.value)}
@@ -201,9 +235,12 @@ export const AddPatient = ({
                 </label>
                 <div className="relative">
                   <input
+                    name="guardian"
                     type="text"
                     value={formData.guardianName}
-                    onChange={(e) => handleChange("guardianName", e.target.value)}
+                    onChange={(e) =>
+                      handleChange("guardianName", e.target.value)
+                    }
                     onFocus={() => setFocusedField("guardian")}
                     onBlur={() => setFocusedField(null)}
                     className="w-full px-4 py-3.5 bg-slate-50/80 border-2 border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[var(--primary-dark)] focus:bg-white focus:shadow-lg transition-all text-[15px]"
@@ -242,6 +279,7 @@ export const AddPatient = ({
                     <Phone className="w-5 h-5" strokeWidth={2} />
                   </div>
                   <IMaskInput
+                    name="phone"
                     type="tel"
                     mask="0000-0000000"
                     value={formData.phoneNumber}
@@ -297,6 +335,7 @@ export const AddPatient = ({
                     <MapPin className="w-5 h-5" strokeWidth={2} />
                   </div>
                   <input
+                    name="address"
                     type="text"
                     value={formData.address}
                     onChange={(e) => handleChange("address", e.target.value)}
@@ -339,6 +378,7 @@ export const AddPatient = ({
                   <FileText className="w-5 h-5" strokeWidth={2} />
                 </div>
                 <textarea
+                  name="medicalHistory"
                   rows={4}
                   value={formData.medicalHistory}
                   onChange={(e) =>
@@ -368,15 +408,17 @@ export const AddPatient = ({
         <div className="flex items-center gap-3">
           <button
             type="button"
+            onClick={onClose}
             className="px-6 py-3 rounded-xl font-semibold text-slate-700 bg-white border-2 border-slate-300 hover:bg-slate-50 hover:border-slate-400 transition-all shadow-sm hover:shadow active:scale-[0.98] text-[15px]"
           >
             Cancel
           </button>
           <button
-            type="button"
-            className="px-6 py-3 rounded-xl font-semibold text-white bg-[var(--primary)] hover:bg-[var(--primary-dark)] transition-all shadow-lg active:scale-[0.98] text-[15px]"
+            type="submit"
+            disabled={isPending}
+            className="px-6 py-3 rounded-xl font-semibold text-white bg-[var(--primary)] hover:bg-[var(--primary-dark)] transition-all shadow-lg active:scale-[0.98] text-[15px] disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            Save Patient
+            {isPending ? "Saving..." : "Save Patient"}
           </button>
         </div>
       </div>
