@@ -65,6 +65,7 @@ export const AddPatient = ({
     <form
       action={formAction}
       className="max-w-4xl w-full bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] border border-slate-200/60"
+      onClick={(event) => event.stopPropagation()}
     >
       {/* Header */}
       <div className="relative px-8 py-6 bg-[var(--primary-dark)] text-white overflow-hidden">

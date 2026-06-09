@@ -27,26 +27,29 @@ export const PatientButtons = () => {
                 <span className="text-sm">➕</span>
                 Add Patient
             </button >
-            {
-                isAddPatientOpen && (
-                    <div   className={`fixed inset-0 z-50 flex items-center justify-center bg-slate-200/40 p-4 transition-opacity ${
-          isAddPatientOpen
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 pointer-events-none"
-            
-        }`} onClick={() => setIsAddPatientOpen(false)}>
-                       <AddPatient
-            open={isAddPatientOpen}
-            onClose={() => setIsAddPatientOpen(false)}
-            onSuccess={(message) => {
-              toast.success(message)
-              redirect("/patients");
-            }} 
-
-          />
-          </div>
-                )
-            }
+                        {isAddPatientOpen && (
+                                <div
+                                    className={`fixed inset-0 z-50 flex items-center justify-center bg-slate-200/40 p-4 transition-opacity ${
+                                        isAddPatientOpen
+                                            ? "opacity-100 pointer-events-auto"
+                                            : "opacity-0 pointer-events-none"
+                                    }`}
+                                    onClick={(event) => {
+                                        if (event.target === event.currentTarget) {
+                                            setIsAddPatientOpen(false);
+                                        }
+                                    }}
+                                >
+                                    <AddPatient
+                                        open={isAddPatientOpen}
+                                        onClose={() => setIsAddPatientOpen(false)}
+                                        onSuccess={(message) => {
+                                            toast.success(message);
+                                            // redirect("/patients");
+                                        }}
+                                    />
+                                </div>
+                        )}
         </div>
 
     );

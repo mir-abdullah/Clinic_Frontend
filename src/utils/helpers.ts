@@ -1,19 +1,36 @@
 import { Appointment } from "./type";
 
-  export const getUpcomingAppointment = (appointments: Appointment[]) => {
-    const today = new Date();
+export const getUpcomingAppointment = (appointments: Appointment[]) => {
+  const now = new Date();
 
-    // Convert appointmentDate to Date and filter only future ones
-    const futureAppointments = appointments
-      .map((appt) => ({
+  const futureAppointments = appointments
+    .map((appt) => {
+      // Combine date + time into a single Date object
+      const appointmentDateTime = new Date(appt.date);
+
+      if (appt.time) {
+        const [hours, minutes] = appt.time.split(":").map(Number);
+
+        appointmentDateTime.setHours(hours);
+        appointmentDateTime.setMinutes(minutes);
+        appointmentDateTime.setSeconds(0);
+        appointmentDateTime.setMilliseconds(0);
+      }
+
+      return {
         ...appt,
-        appointmentDate: new Date(appt.date), // ensure Date object
-      }))
-      .filter((appt) => appt.appointmentDate >= today) // only future or today
-      .sort((a, b) => a.appointmentDate.getTime() - b.appointmentDate.getTime()); // sort ascending
+        appointmentDateTime,
+      };
+    })
+    .filter((appt) => appt.appointmentDateTime >= now)
+    .sort(
+      (a, b) =>
+        a.appointmentDateTime.getTime() -
+        b.appointmentDateTime.getTime()
+    );
 
-    return futureAppointments.length > 0 ? futureAppointments[0] : null;
-  };
+  return futureAppointments.length > 0 ? futureAppointments[0] : null;
+};
 
       const getOrdinal = (n: number) => {
           const s = n % 100;

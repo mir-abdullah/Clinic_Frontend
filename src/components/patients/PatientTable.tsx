@@ -39,7 +39,11 @@ export const PatientTable = ({ patientsList }: { patientsList: Patient[] }) => {
                                     })
                                 : null;
 
-                            const upcomingVisit = patient.appointments && patient.appointments.length > 0 ? getUpcomingAppointment(patient.appointments) : null;
+                            
+
+
+                            const upcomingVisit = patient.appointments && patient.appointments.length > 0 ? getUpcomingAppointment(patient?.appointments) : null;
+                            console.log(upcomingVisit)
 
                             return (
                                 <TableRow key={patient.id} className="border-border/80 hover:bg-(--bg-secondary) transition-colors ">
@@ -51,7 +55,7 @@ export const PatientTable = ({ patientsList }: { patientsList: Patient[] }) => {
                                     <TableCell className="text-(--text-primary) py-2">{lastVisit ? formatDateWithOrdinal(lastVisit.date) : "N/A"}</TableCell>
                                     <TableCell className="text-(--text-primary) py-2">{upcomingVisit ? formatDateWithOrdinal(upcomingVisit.date) : "N/A"}</TableCell>
                                     <TableCell className="py-2">
-                                        <TableButtons />
+                                        <TableButtons patientId={patient.id} />
                                     </TableCell>
                                 </TableRow>
                             );

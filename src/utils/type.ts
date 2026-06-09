@@ -72,3 +72,23 @@ export type Action={
   icon:string;
   link?: string;
 }
+
+export type addAppointmentDTO = {
+  name?: string;
+  phone?: string;
+  address?: string;
+  gender?: string;
+  age?: number;
+  patientId?: string;
+  status: "SCHEDULED" | "COMPLETED" | "CANCELED";
+  doctorName?: string;
+  date: string;
+  time: string;
+  reason?: string;
+  notes?: string;
+}
+
+export type addAppointmentActionState = {
+  status: "idle" | "error" | "success";
+  message: string;
+}

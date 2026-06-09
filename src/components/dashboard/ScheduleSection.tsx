@@ -13,6 +13,7 @@ import Link from "next/link";
 
 
 export const ScheduleSection = ({appointments}: {appointments: Appointment[]}) => {
+    console.log(appointments)
   return (
     <Card className="lg:w-255">
         <CardContent>
@@ -47,11 +48,11 @@ export const ScheduleSection = ({appointments}: {appointments: Appointment[]}) =
                     <TableBody>
                         {appointments.map((appointment) => (
                             <TableRow key={appointment.id} className="border-border hover:bg-(--bg-secondary) transition-colors">
-                                <TableCell className="text-(--text-primary) font-medium">{appointment.patient.name}</TableCell>
-                                <TableCell className="text-(--text-secondary)">{appointment.patient.phone || "N/A"}</TableCell>
+                                <TableCell className="text-(--text-primary) font-medium">{appointment.patient?.name || "N/A"}</TableCell>
+                                <TableCell className="text-(--text-secondary)">{appointment.patient?.phone || "N/A"}</TableCell>
                                 <TableCell className="text-(--text-secondary)">{formatDateWithOrdinal(appointment.date)}</TableCell>
                                 <TableCell className="text-(--text-secondary)">{appointment.time}</TableCell>
-                                <TableCell className="text-(--text-secondary)">{appointment.reason}</TableCell>
+                                <TableCell className="text-(--text-secondary)">{appointment.reason || "N/A"}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

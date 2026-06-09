@@ -1,6 +1,7 @@
 "use server";
 import { AddPatientActionState } from "@/utils/type";
 import { patientAPI } from "@/utils/api";
+import { revalidatePath } from "next/cache";
 
 
 export async function addPatient(
@@ -34,10 +35,33 @@ export async function addPatient(
         medicalHistory
     })
 
+    revalidatePath("/patients");
     return {
         status: "success" as const,
         message: "Patient added successfully",
     };
+}
+
+
+export const deletePatient = async (patientId: string) => {
+    try {
+        await patientAPI.delete(`/${patientId}`);
+        revalidatePath("/patients");
+        return {
+            status: "success" as const,
+            message: "Patient deleted successfully",
+        };
+    } catch (err: unknown) {
+        const message =
+            typeof err === "object" && err !== null && "response" in err
+                ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  (err as any).response?.data?.message
+                : null;
+        return {
+            status: "error" as const,
+            message: message || "Failed to delete patient",
+        };
+    }
 }
 
 
