@@ -44,24 +44,28 @@ export async function addPatient(
 
 
 export const deletePatient = async (patientId: string) => {
-    try {
-        await patientAPI.delete(`/${patientId}`);
-        revalidatePath("/patients");
-        return {
-            status: "success" as const,
-            message: "Patient deleted successfully",
-        };
-    } catch (err: unknown) {
-        const message =
-            typeof err === "object" && err !== null && "response" in err
-                ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  (err as any).response?.data?.message
-                : null;
-        return {
-            status: "error" as const,
-            message: message || "Failed to delete patient",
-        };
-    }
-}
+  try {
+    const { data } = await patientAPI.patch(`/${patientId}`);
+
+    revalidatePath("/patients");
+
+    return {
+      status: "success" as const,
+      message: data.message,
+    };
+  } catch (err: unknown) {
+    const message =
+      typeof err === "object" &&
+      err !== null &&
+      "response" in err
+        ? (err as any).response?.data?.message
+        : null;
+
+    return {
+      status: "error" as const,
+      message: message || "Failed to delete patient",
+    };
+  }
+};
 
 

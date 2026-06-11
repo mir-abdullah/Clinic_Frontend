@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { patientAPI } from "@/utils/api";
 import { toast } from "sonner";
+import { deletePatient } from "@/actions/patients";
 
 export const DeletePatient = ({
   open = true,
@@ -41,7 +42,7 @@ export const DeletePatient = ({
     if (!patientId) return;
     setIsDeleting(true);
     try {
-      await patientAPI.delete(`/delete/${patientId}`);
+      await deletePatient(patientId);
       toast.success("Patient deleted successfully");
       onDeleted();
     } catch (err: unknown) {
@@ -59,11 +60,11 @@ export const DeletePatient = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-200/40 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-200/40 p-4 overflow-auto"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div
-        className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col"
+        className=" w-fit bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="px-6 py-4 border-b flex items-center justify-between">
@@ -77,7 +78,7 @@ export const DeletePatient = ({
         </div>
 
         <div className="p-6">
-          <p className="text-sm text-slate-700 mb-4">
+          <p className="text-sm text-slate-700 mb-4 ">
             Are you sure you want to delete {patientName || "this patient"}?
             This action cannot be undone.
           </p>
@@ -85,7 +86,7 @@ export const DeletePatient = ({
           <div className="flex justify-end gap-3">
             <button
               type="button"
-              className="px-4 py-2 rounded-lg border border-slate-300 hover:bg-slate-50"
+              className="px-4 py-2 rounded-lg border border-slate-300 hover:bg-slate-50 cursor-pointer"
               onClick={onClose}
             >
               Cancel
@@ -94,7 +95,7 @@ export const DeletePatient = ({
               type="button"
               disabled={isDeleting}
               onClick={handleDelete}
-              className="px-4 py-2 rounded-lg bg-red-600 text-white disabled:opacity-50"
+              className="px-4 py-2 rounded-lg bg-red-600 text-white disabled:opacity-50 cursor-pointer hover:bg-red-800"
             >
               {isDeleting ? "Deleting..." : "Delete"}
             </button>

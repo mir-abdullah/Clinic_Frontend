@@ -92,3 +92,16 @@ export type addAppointmentActionState = {
   status: "idle" | "error" | "success";
   message: string;
 }
+
+
+export type addPaymentDTO = {
+  visitId: string;
+  amount: number;
+  method: "CASH" | "CARD" | "ONLINE";
+  notes?: string;
+}
+
+export type  actionState = {
+  status: "idle" | "error" | "success";
+  message: string;
+}

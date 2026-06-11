@@ -6,84 +6,130 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 import { Visit } from "@/utils/type";
 import Link from "next/link";
 import { formatDateWithOrdinal } from "@/utils/helpers";
 
-
-export const RecentVisits = ({visits}:{visits:Visit[]}) => {
-
+export const RecentVisits = ({ visits }: { visits: Visit[] }) => {
   return (
-    <Card>
-        <CardContent>
-            <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-(--text-primary)">Recent Visits</h2>
-                <Link href="/visits" className="text-sm text-blue-500 font-medium hover:underline">
-                    View All
-                </Link>
-            </div>
+    <Card className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="text-lg font-semibold text-gray-900">
+            Recent Visits
+          </h2>
 
-            <hr className="border-border mb-4"/>
-            {visits.length === 0 ? (
-                <div>
-                    <div className="flex flex-col text-center px-12 py-6 text-(--text-secondary) gap-2 items-center">
-                        <span className="text-5xl opacity-30 mb-3">🩺</span>
-                        <span className="text-lg">No Recent Visits.</span>
-                    </div>
+          <Link
+            href="/visits"
+            className="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline"
+          >
+            View All
+          </Link>
+        </div>
 
-                </div>
-            ) : 
-            (
-                <Table>
-                    <TableHeader>
-                        <TableRow className="border-border hover:bg-transparent">
-                            <TableHead className="text-(--text-primary) font-semibold bg-(--bg-secondary)">Name</TableHead>
-                            <TableHead className="text-(--text-primary) font-semibold bg-(--bg-secondary)">Phone</TableHead> 
-                            <TableHead className="text-(--text-primary) font-semibold bg-(--bg-secondary)">Visit Date</TableHead>
-                            <TableHead className="text-(--text-primary) font-semibold bg-(--bg-secondary)">Time</TableHead>
-                            <TableHead className="text-(--text-primary) font-semibold bg-(--bg-secondary)">Service Rendered</TableHead>
-                            <TableHead className="text-(--text-primary) font-semibold bg-(--bg-secondary)">Total Bill</TableHead>
-                            <TableHead className="text-(--text-primary) font-semibold bg-(--bg-secondary)">Paid Amount</TableHead>
-                            <TableHead className="text-(--text-primary) font-semibold bg-(--bg-secondary)">Due Amount</TableHead>
-                            <TableHead className="text-(--text-primary) font-semibold bg-(--bg-secondary)">Payment Status</TableHead>
+        {visits.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <span className="mb-3 text-5xl opacity-30">🩺</span>
+            <p className="text-gray-500">No Recent Visits</p>
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-gray-100 hover:bg-gray-100 border-none">
+                <TableHead className="font-semibold text-gray-500 uppercase text-xs">
+                  Patient
+                </TableHead>
+                <TableHead className="font-semibold text-gray-500 uppercase text-xs">
+                  Phone
+                </TableHead>
+                <TableHead className="font-semibold text-gray-500 uppercase text-xs">
+                  Date
+                </TableHead>
+                <TableHead className="font-semibold text-gray-500 uppercase text-xs">
+                  Time
+                </TableHead>
+                <TableHead className="font-semibold text-gray-500 uppercase text-xs">
+                  Service
+                </TableHead>
+                <TableHead className="font-semibold text-gray-500 uppercase text-xs">
+                  Billed
+                </TableHead>
+                <TableHead className="font-semibold text-gray-500 uppercase text-xs">
+                  Collected
+                </TableHead>
+                <TableHead className="font-semibold text-gray-500 uppercase text-xs">
+                  Balance
+                </TableHead>
+                <TableHead className="font-semibold text-gray-500 uppercase text-xs">
+                  Status
+                </TableHead>
+              </TableRow>
+            </TableHeader>
 
-                            
-                            
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {visits.map((visit, index) => (
-                            <TableRow key={index} className="border-border hover:bg-(--bg-secondary) transition-colors">
-                                <TableCell className="text-(--text-primary) font-medium">{visit.patient?.name ?? "N/A"}</TableCell>
-                                <TableCell className="text-(--text-secondary)">{visit.patient?.phone ?? "N/A"}</TableCell>
-                                <TableCell className="text-(--text-secondary)">{formatDateWithOrdinal(visit.date)}</TableCell>
-                                <TableCell className="text-(--text-secondary)">{visit.time }</TableCell>
-                                <TableCell className="text-(--text-secondary)">{visit.reason}</TableCell>
-                                <TableCell className="text-(--text-secondary)">Rs.{visit.totalAmount.toFixed(2)}</TableCell>
-                                <TableCell className="text-(--text-secondary)">Rs.{visit.paidAmount.toFixed(2)}</TableCell>
-                                <TableCell className="text-(--text-secondary)">Rs.{visit.dueAmount.toFixed(2)}</TableCell>
-                                
-                                <TableCell className="text-(--text-secondary)">
-                                    {visit.paymentStatus === "PAID" ? (
-                                        <span className="text-green-600 font-medium">Paid</span>
-                                    ) : visit.paymentStatus === "PARTIAL" ? (
-                                        <span className="text-yellow-600 font-medium">Partial</span>
-                                    ) : (
-                                        <span className="text-red-600 font-medium">Pending</span>
-                                    )}
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+            <TableBody>
+              {visits.map((visit) => (
+                <TableRow
+                  key={visit.id}
+                  className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
+                >
+                  <TableCell className="py-4 font-semibold text-gray-900">
+                    {visit.patient?.name || "N/A"}
+                  </TableCell>
 
-                        
-            )}
-        </CardContent>
-            
+                  <TableCell className="py-4 text-gray-700">
+                    {visit.patient?.phone || "N/A"}
+                  </TableCell>
+
+                  <TableCell className="py-4 text-gray-700">
+                    {formatDateWithOrdinal(visit.date)}
+                  </TableCell>
+
+                  <TableCell className="py-4 text-gray-700">
+                    {visit.time}
+                  </TableCell>
+
+                  <TableCell className="py-4 text-gray-700">
+                    {visit.reason}
+                  </TableCell>
+
+                  <TableCell className="py-4 font-medium text-gray-900">
+                    Rs{visit.totalAmount.toLocaleString()}
+                  </TableCell>
+
+                  <TableCell className="py-4 text-gray-700">
+                    Rs{visit.paidAmount.toLocaleString()}
+                  </TableCell>
+
+                  <TableCell
+                    className={`py-4 font-semibold ${
+                      visit.dueAmount > 0
+                        ? "text-amber-500"
+                        : "text-green-500"
+                    }`}
+                  >
+                    Rs{visit.dueAmount.toLocaleString()}
+                  </TableCell>
+
+                  <TableCell className="py-4">
+                    <span
+                      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                        visit.paymentStatus === "PAID"
+                          ? "bg-green-100 text-green-600"
+                          : visit.paymentStatus === "PARTIAL"
+                          ? "bg-yellow-100 text-yellow-600"
+                          : "bg-red-100 text-red-600"
+                      }`}
+                    >
+                      {visit.paymentStatus}
+                    </span>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </CardContent>
     </Card>
-    
-
   );
-}
+};

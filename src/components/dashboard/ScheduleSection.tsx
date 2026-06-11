@@ -13,7 +13,6 @@ import Link from "next/link";
 
 
 export const ScheduleSection = ({appointments}: {appointments: Appointment[]}) => {
-    console.log(appointments)
   return (
     <Card className="lg:w-255">
         <CardContent>
