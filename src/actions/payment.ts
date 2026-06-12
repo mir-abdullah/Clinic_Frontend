@@ -4,12 +4,12 @@ import { paymentAPI } from "@/utils/api";
 import { revalidatePath } from "next/cache";
 
 export async function addPayment(
+    visitId: string,
   prevState: actionState,
   formData: FormData,
 ) {
     const amount = parseFloat(formData.get("amount") as string);
     const method = formData.get("method") as string;
-    const visitId = formData.get("visitId") as string;
     const notes = formData.get("notes") as string;
 
     if (Number.isNaN(amount) || !method || !visitId) {

@@ -21,15 +21,15 @@ export const RecordPaymentModal = ({
   onSuccess?: (message: string) => void;
   visit: Visit;
 }) => {
-  const wrappedAction = async (prevState: actionState, formData: FormData) => {
-    formData.append("visitId", visit.id);
-    return addPayment(prevState, formData);
-  };
-  const [amount, setAmount] = useState("");
+
+  const addPaymentWithVisit = addPayment.bind(null, visit.id);
   const [state, formAction, pending] = useActionState(
-    wrappedAction,
-    initialState,
+    addPaymentWithVisit,
+    initialState
   );
+ 
+  const [amount, setAmount] = useState("");
+
 
   const previouslyPaid = visit?.paidAmount ?? 0;
   const totalBilled = visit?.totalAmount ?? 0;

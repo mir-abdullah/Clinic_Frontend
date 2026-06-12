@@ -7,7 +7,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatDateWithOrdinal } from "@/utils/helpers";
-import { getUpcomingAppointment } from "@/utils/helpers";
 import { Card, CardContent } from "@/components/ui/card";
 import { TableButtons } from "./TableButtons";
 import { Patient } from "@/utils/type";
@@ -52,23 +51,9 @@ export const PatientTable = ({
 
           <TableBody>
             {patientsList.map((patient, index) => {
-              const numberOfVisits = patient.visits?.length || 0;
-
-              const lastVisit =
-                patient.visits && patient.visits.length > 0
-                  ? patient.visits.reduce((latest, visit) => {
-                      const visitDate = new Date(visit.date);
-                      return visitDate > new Date(latest.date)
-                        ? visit
-                        : latest;
-                    })
-                  : null;
-
-              const upcomingVisit =
-                patient.appointments &&
-                patient.appointments.length > 0
-                  ? getUpcomingAppointment(patient.appointments)
-                  : null;
+              const lastVisit = patient?.visits?.[0]?.date
+              const upcomingVisit = patient?.appointments?.[0]?.date
+              
 
               return (
                 <TableRow
@@ -95,20 +80,20 @@ export const PatientTable = ({
 
                   <TableCell className="py-4">
                     <span className="inline-flex items-center rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-blue-600">
-                      {numberOfVisits}
+                      {patient?._count?.visits || 0}
                     </span>
                   </TableCell>
 
                   <TableCell className="py-4 text-gray-700">
                     {lastVisit
-                      ? formatDateWithOrdinal(lastVisit.date)
+                      ? formatDateWithOrdinal(lastVisit)
                       : "N/A"}
                   </TableCell>
 
                   <TableCell className="py-4">
                     {upcomingVisit ? (
                       <span className="inline-flex items-center rounded-full bg-green-50 px-3 py-1 text-xs font-medium text-green-600">
-                        {formatDateWithOrdinal(upcomingVisit.date)}
+                        {formatDateWithOrdinal(upcomingVisit)}
                       </span>
                     ) : (
                       <span className="text-gray-400">No Appointment</span>

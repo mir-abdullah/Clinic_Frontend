@@ -4,15 +4,19 @@ import { Visit} from "@/utils/type";
 import { useState } from 'react';
 import { toast } from "sonner";
 import { RecordPaymentModal } from "@/components/modals/RecordPayment";
+import { ViewVisitModal } from '../modals/ViewVisitDetails';
 
 const VisitActions = ({ visit }: { visit: Visit }) => {
       const [recordPaymentOpen, setRecordPaymentOpen] = useState(false);
+      const [viewVisitOpen, setViewVisitOpen] = useState(false);
+  
 
   return (
     <div className="flex flex-row gap-2">
          <button
           className="h-8 w-8 rounded-md border border-border bg-(--bg-primary) hover:bg-(--bg-secondary) transition cursor-pointer"
           title="View"
+          onClick={() => setViewVisitOpen(true)}
         >
           👁️
         </button>
@@ -36,6 +40,15 @@ const VisitActions = ({ visit }: { visit: Visit }) => {
               open={recordPaymentOpen}
             />
             
+          )
+        }
+        {
+          viewVisitOpen && (
+            <ViewVisitModal 
+              visit={visit}
+              onClose={() => setViewVisitOpen(false)}
+              open={viewVisitOpen}
+            />
           )
         }
 

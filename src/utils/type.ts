@@ -12,8 +12,16 @@ export type Patient = {
   medicalHistory?: string;
   createdAt?: string;
   updatedAt?: string;
-  visits?: Visit[];
-  appointments?: Appointment[];
+  visits?: {
+    date: Date;
+  }[];
+  appointments?: {
+    date: Date;
+  }[];
+  _count?: {
+    visits: number;
+    appointments: number;
+  };
 };
 
 export type createPatientDTO = {
@@ -104,4 +112,29 @@ export type addPaymentDTO = {
 export type  actionState = {
   status: "idle" | "error" | "success";
   message: string;
+}
+
+export type  addVisitDTO = {
+  patientId: string;
+  doctorName?: string;
+  date: string;
+  time: string;
+  reason?: string;
+  diagnosis?: string;
+  prescription?: string;
+  notes?: string;
+  totalAmount: number;
+  paidAmount: number;
+  dueAmount: number;
+  paymentStatus: "PAID" | "PENDING" | "PARTIAL";
+}
+
+export type Payment = {
+  id: string;
+  visitId: string;
+  amount: number;
+  method: "CASH" | "CARD" | "ONLINE";
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
 }
