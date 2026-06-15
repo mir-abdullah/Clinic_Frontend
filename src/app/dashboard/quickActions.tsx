@@ -6,14 +6,17 @@ import { Action } from "@/utils/type";
 import { AddPatient } from "@/components/modals/AddPatient";
 import { toast } from "sonner";
 import { redirect } from "next/navigation";
+import { BookAppointment } from "@/components/modals/BookAppointment";
 
 type Props = {
   actions: Action[];
 };
 
 export function QuickActionsClient({ actions }: Props) {
-  const [activeModal, setActiveModal] = useState<null | "addPatient">(null);
+  const [activeModal, setActiveModal] = useState<null | "addPatient" | "bookAppointment">(null);
   const isAddPatientOpen = activeModal === "addPatient";
+  const isBookAppointmentOpen = activeModal === "bookAppointment";
+
 
   useEffect(() => {
     if (!isAddPatientOpen) {
@@ -44,12 +47,15 @@ export function QuickActionsClient({ actions }: Props) {
           if (action.title === "Add Patient") {
             setActiveModal("addPatient");
           }
+          else if (action.title === "Book Appointment") {
+            setActiveModal("bookAppointment");
+          }
         }}
       />
 
       <div
         className={`fixed inset-0 z-50 flex items-center justify-center bg-slate-200/40 p-4 transition-opacity ${
-          isAddPatientOpen
+          isAddPatientOpen || isBookAppointmentOpen
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none"
         }`}
@@ -65,6 +71,18 @@ export function QuickActionsClient({ actions }: Props) {
             }}
           />
         </div>
+        {
+          isBookAppointmentOpen && (
+            <BookAppointment 
+              open={isBookAppointmentOpen}
+              onClose={() => setActiveModal(null)}
+              onSuccess={() => {
+                setActiveModal(null);
+                toast.success("Appointment Booked Successfully", { position: "top-right" })
+              }}
+            />
+          )
+        }
       </div>
     </>
   );

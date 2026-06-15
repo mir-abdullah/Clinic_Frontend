@@ -12,14 +12,15 @@ import { visitAPI } from "@/utils/api";
 export default async function DashboardPage() {
 
     //api calls
-    const appointmentsToday = await appointmentAPI.get("/today")
-    const numberOfpatientsMonth = await patientAPI.get("/total/count/month")
-    const monthlyRevenue = await visitAPI.get("/monthly/revenue")
-    const last5Visits = await visitAPI.get("/recent/5")
 
-    
+    const [appointmentsToday, numberOfpatientsMonth, monthlyRevenue, last5Visits] = await Promise.all([
+        appointmentAPI.get("/today"),
+        patientAPI.get("/total/count/month"),
+        visitAPI.get("/monthly/revenue"),
+        visitAPI.get("/recent/5")
+    ]);
 
-
+   
  
     const currentDate = new Date();
     const formattedDate = currentDate.toLocaleDateString(undefined, {

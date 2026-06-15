@@ -127,6 +127,7 @@ export type  addVisitDTO = {
   paidAmount: number;
   dueAmount: number;
   paymentStatus: "PAID" | "PENDING" | "PARTIAL";
+  paymentMethod?: "CASH" | "CARD" | "ONLINE";
 }
 
 export type Payment = {

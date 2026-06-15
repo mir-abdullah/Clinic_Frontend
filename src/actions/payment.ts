@@ -9,7 +9,7 @@ export async function addPayment(
   formData: FormData,
 ) {
     const amount = parseFloat(formData.get("amount") as string);
-    const method = formData.get("method") as string;
+    const method = formData.get("paymentMethod") as string;
     const notes = formData.get("notes") as string;
 
     if (Number.isNaN(amount) || !method || !visitId) {

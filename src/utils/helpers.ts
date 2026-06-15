@@ -57,3 +57,4 @@ export const getUpcomingAppointment = (appointments: Appointment[]) => {
           return `${day}${getOrdinal(day)} ${month} ${year}`;
       };
   
+

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Visit, Payment } from "@/utils/type";
 import { paymentAPI } from "@/utils/api";
 import { formatDateWithOrdinal } from "@/utils/helpers";
-import { X, Eye, CreditCard, Banknote, Landmark, FileText, Globe, MoreHorizontal, Loader2 } from "lucide-react";
+import { X, Eye, Banknote, Landmark, Globe,  Loader2 } from "lucide-react";
 
 const paymentMethodConfig: Record<
   string,
@@ -18,7 +18,6 @@ const paymentMethodConfig: Record<
 export const ViewVisitModal = ({
   open = true,
   onClose = () => {},
-  onAddPayment = () => {},
   visit,
 }: {
   open?: boolean;
@@ -218,7 +217,7 @@ export const ViewVisitModal = ({
         <div className="flex justify-end gap-3 px-6 py-4 border-t border-border shrink-0">
           <button
             onClick={onClose}
-            className="rounded-lg border border-border px-5 py-2 text-sm font-medium text-(--text-primary) hover:bg-(--bg-secondary) transition-colors"
+            className=" cursor-pointer rounded-lg border border-border px-5 py-2 text-sm font-medium text-(--text-primary) hover:bg-(--bg-secondary) transition-colors"
           >
             Close
           </button>

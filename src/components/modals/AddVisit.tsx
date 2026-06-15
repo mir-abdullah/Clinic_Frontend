@@ -291,6 +291,23 @@ export const AddVisitModal = ({
                       className={`${inputClass} pl-9`}
                     />
                   </div>
+                    {/* Payment Method */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Payment Method <span className="text-red-500">*</span>
+                </label>
+
+                <select
+                  name="paymentMethod"
+                  className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-100 cursor-pointer"
+                  required
+                >
+                  <option value="">Select payment method</option>
+                  <option value="CASH">💵 Cash</option>
+                  <option value="ONLINE">🌐 Online</option>
+                  <option value="BANK">🏦 Bank</option>
+                </select>
+              </div>
                 </div>
 
                 {/* Premium summary card */}

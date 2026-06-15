@@ -1,11 +1,40 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState ,useCallback} from "react";
 
 import { redirect } from "next/navigation";
 import { toast } from "sonner";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
+
 
 import { AddPatient } from "../modals/AddPatient";
 export const PatientButtons = () => {
+     const router = useRouter();
+      const pathname = usePathname();
+      const searchParams = useSearchParams();
+      const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+    
+        const updateParams = useCallback(
+          (updates: Record<string, string>) => {
+            const params = new URLSearchParams(searchParams.toString());
+            Object.entries(updates).forEach(([key, value]) => {
+              if (value) params.set(key, value);
+              else params.delete(key);
+            });
+            params.delete("page");
+            router.push(`${pathname}?${params.toString()}`);
+          },
+          [pathname, router, searchParams]
+        );
+      
+        const handleSearch = useCallback(
+          (value: string) => {
+            if (searchTimeout.current) clearTimeout(searchTimeout.current);
+            searchTimeout.current = setTimeout(() => {
+              updateParams({ search: value });
+            }, 400);
+          },
+          [updateParams]
+        );
     const [isAddPatientOpen, setIsAddPatientOpen] = useState(false);
 
     const handleAddPatient = () => {
@@ -17,6 +46,7 @@ export const PatientButtons = () => {
             <div className="relative w-80">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-(--text-secondary)">🔍</span>
                 <input
+                     onChange={(e) => handleSearch(e.target.value)}
                     type="text"
                     placeholder="Search patients..."
                     className="w-full border border-border rounded-md h-9 pl-10 pr-3 focus:outline-none focus:ring-2 focus:ring-primary bg-white text-(--text-primary)"

@@ -188,7 +188,7 @@ export const RecordPaymentModal = ({
                 </label>
 
                 <select
-                  name="method"
+                  name="paymentMethod"
                   className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-100 cursor-pointer"
                   required
                 >
@@ -227,14 +227,14 @@ export const RecordPaymentModal = ({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg border border-border px-5 py-2 text-sm font-medium text-(--text-primary) hover:bg-(--bg-secondary) transition-colors"
+              className="rounded-lg cursor-pointer border border-border px-5 py-2 text-sm font-medium text-(--text-primary) hover:bg-(--bg-secondary) transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={pending}
-              className="flex items-center gap-2 rounded-lg bg-green-500 hover:bg-green-600 px-5 py-2 text-sm font-semibold text-white disabled:opacity-50 transition-colors"
+              className="flex cursor-pointer items-center gap-2 rounded-lg bg-green-500 hover:bg-green-600 px-5 py-2 text-sm font-semibold text-white disabled:opacity-50 transition-colors"
             >
               💳
               {pending ? " Recording..." : " Record Payment"}
