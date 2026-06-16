@@ -92,7 +92,7 @@ export const PatientTable = ({
 
                   <TableCell className="py-4">
                     {upcomingVisit ? (
-                      <span className="inline-flex items-center rounded-full bg-green-50 px-3 py-1 text-xs font-medium text-green-600">
+                      <span className="inline-flex items-center rounded-full bg-green-50 px-3 py-1 text-sm font-medium text-green-600">
                         {formatDateWithOrdinal(upcomingVisit)}
                       </span>
                     ) : (

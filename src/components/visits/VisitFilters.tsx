@@ -19,6 +19,13 @@ const DATE_OPTIONS = [
   { label: "This Month", value: "month" },
 ];
 
+const PAYMENT_OPTIONS = [
+  { label: "All Payments", value: "all" },
+  { label: "Paid", value: "PAID" },
+  { label: "Partial", value: "PARTIAL" },
+  { label: "Unpaid", value: "UNPAID" },
+];
+
 export function VisitFilters() {
   const router = useRouter();
   const pathname = usePathname();
@@ -52,6 +59,12 @@ export function VisitFilters() {
   updateParams({ dateFilter: value === "all" ? "" : value });
 };
 
+const handlePaymentFilter = (value: string) => {
+  updateParams({
+    paymentStatus: value === "all" ? "" : value,
+  });
+};
+
   return (
     <div className="flex gap-3 mb-6 justify-end">
       <Input
@@ -75,6 +88,7 @@ export function VisitFilters() {
           ))}
         </SelectContent>
       </Select>
+      
     </div>
   );
 }

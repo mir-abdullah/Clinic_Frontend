@@ -4,10 +4,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { DeletePatient } from "@/components/modals/DeletePatient";
 import { AddVisitModal } from "@/components/modals/AddVisit";
+import { toast } from "sonner";
+import { BookAppointmentExisting } from "../modals/BookAppointmentExisting";
 
-export const TableButtons = ({ patientId }: { patientId?: string }) => {
+export const TableButtons = ({ patientId }: { patientId: string }) => {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
    const [addVisitModalOpen, setAddVisitModalOpen] = useState(false);
+   const [bookAppointmentOpen, setBookAppointmentOpen] = useState(false);
   const router = useRouter();
 
   return (
@@ -22,6 +25,7 @@ export const TableButtons = ({ patientId }: { patientId?: string }) => {
         <button
           className="h-8 w-8 rounded-md border border-border bg-(--bg-primary) hover:bg-green-100 transition cursor-pointer"
           title="Add Appointment"
+          onClick={() => setBookAppointmentOpen(true)}
         >
           📅
         </button>
@@ -47,6 +51,7 @@ export const TableButtons = ({ patientId }: { patientId?: string }) => {
           patientId={patientId}
           onClose={() => setIsDeleteOpen(false)}
           onDeleted={() => {
+            toast.success("Patient removed successfully");
             setIsDeleteOpen(false);
             router.refresh();
           }}
@@ -59,7 +64,22 @@ export const TableButtons = ({ patientId }: { patientId?: string }) => {
             patientId={patientId}
             onClose={()=> setAddVisitModalOpen(false)}
             onSuccess={()=>{
+              toast.success("Visit added successfully");
               setAddVisitModalOpen(false);
+              router.refresh();
+            }}
+          />
+        )
+      }
+      {
+        bookAppointmentOpen && (
+          <BookAppointmentExisting
+            open={bookAppointmentOpen}
+            patientId={patientId}
+            onClose={() => setBookAppointmentOpen(false)}
+            onSuccess={() => {
+              toast.success("Appointment booked successfully");
+              setBookAppointmentOpen(false);
               router.refresh();
             }}
           />

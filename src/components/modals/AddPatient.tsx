@@ -410,14 +410,14 @@ export const AddPatient = ({
           <button
             type="button"
             onClick={onClose}
-            className="px-6 py-3 rounded-xl font-semibold text-slate-700 bg-white border-2 border-slate-300 hover:bg-slate-50 hover:border-slate-400 transition-all shadow-sm hover:shadow active:scale-[0.98] text-[15px]"
+            className="px-6 py-3 cursor-pointer rounded-xl font-semibold text-slate-700 bg-white border-2 border-slate-300 hover:bg-slate-50 hover:border-slate-400 transition-all shadow-sm hover:shadow active:scale-[0.98] text-[15px]"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={isPending}
-            className="px-6 py-3 rounded-xl font-semibold text-white bg-[var(--primary)] hover:bg-[var(--primary-dark)] transition-all shadow-lg active:scale-[0.98] text-[15px] disabled:opacity-70 disabled:cursor-not-allowed"
+            className="px-6 py-3 cursor-pointer rounded-xl font-semibold text-white bg-[var(--primary)] hover:bg-[var(--primary-dark)] transition-all shadow-lg active:scale-[0.98] text-[15px] disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {isPending ? "Saving..." : "Save Patient"}
           </button>

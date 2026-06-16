@@ -52,7 +52,7 @@ export const PatientButtons = () => {
                     className="w-full border border-border rounded-md h-9 pl-10 pr-3 focus:outline-none focus:ring-2 focus:ring-primary bg-white text-(--text-primary)"
                 />
             </div>
-            <button className="rounded-md bg-primary text-white px-4 h-9 inline-flex items-center gap-2 hover:bg-(--primary-dark) transition shadow-sm"
+            <button className="rounded-md cursor-pointer bg-primary text-white px-4 h-9 inline-flex items-center gap-2 hover:bg-(--primary-dark) transition shadow-sm"
              onClick={handleAddPatient}>
                 <span className="text-sm">➕</span>
                 Add Patient

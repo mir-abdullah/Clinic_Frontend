@@ -9,11 +9,11 @@ export default async function PatientsPage({searchParams}: {searchParams: Promis
   const currentPage = Number(page) || 1;
     const params = new URLSearchParams();
     params.set("page", String(currentPage));
-    params.set("limit", "15");
+    params.set("limit", "10");
     if (search) params.set("search", search);
     
     const patients =await patientAPI.get(`/all?${params.toString()}`)
-    const totalPages = patients?.data?.totalPages 
+    const totalPages = patients?.data?.pagination?.totalPages || 1; 
 
 
     return (
