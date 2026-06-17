@@ -102,7 +102,7 @@ export const PatientTable = ({
 
                   <TableCell className="py-4">
                     <div className="flex items-center gap-2">
-                      <TableButtons patientId={patient.id} />
+                      <TableButtons patient={patient} />
                     </div>
                   </TableCell>
                 </TableRow>
