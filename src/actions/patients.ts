@@ -69,3 +69,53 @@ export const deletePatient = async (patientId: string) => {
 };
 
 
+export const editPatient = async (patientId: string, prevState: AddPatientActionState, formData: FormData) => {
+  const name = formData.get("name") as string;
+  const age = parseInt(formData.get("age") as string);
+  const phone = formData.get("phone") as string;
+  const address = formData.get("address") as string;
+  const gender = formData.get("gender") as string;
+  const guardian = formData.get("guardian") as string;
+  const occupation = formData.get("occupation") as string;
+  const medicalHistory = formData.get("medicalHistory") as string;
+
+  if (!name || !phone || !address || !gender || Number.isNaN(age)) {
+    return {
+      status: "error" as const,
+      message: "Please fill in all required fields before saving.",
+    };
+  }
+
+  try {
+    const { data } = await patientAPI.put(`/${patientId}`, {
+      name,
+      age,
+      phone,
+      address,
+      gender,
+      guardian,
+      occupation,
+      medicalHistory
+    });
+
+    revalidatePath("/patients");
+
+    return {
+      status: "success" as const,
+      message: data.message,
+    };
+  } catch (err: unknown) {
+    const message =
+      typeof err === "object" &&
+      err !== null &&
+      "response" in err
+        ? (err as any).response?.data?.message
+        : null;
+
+    return {
+      status: "error" as const,
+      message: message || "Failed to edit patient",
+    };
+  }
+}
+

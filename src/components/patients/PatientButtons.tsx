@@ -71,6 +71,8 @@ export const PatientButtons = () => {
                                     }}
                                 >
                                     <AddPatient
+                                        key={"add"}
+                                        mode="add"
                                         open={isAddPatientOpen}
                                         onClose={() => setIsAddPatientOpen(false)}
                                         onSuccess={(message) => {

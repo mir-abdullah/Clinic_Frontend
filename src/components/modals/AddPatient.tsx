@@ -14,52 +14,67 @@ import {
 import { IMaskInput } from "react-imask";
 import { useActionState, useEffect, useState } from "react";
 import { AddPatientActionState } from "@/utils/type";
-import { addPatient } from "@/actions/patients";
+import { addPatient, editPatient } from "@/actions/patients";
+import { Patient } from "@/utils/type";
 
 export const AddPatient = ({
   open = true,
   onClose = () => {},
   onSuccess = () => {},
+  mode = "add",
+  patient,
 }: {
   open?: boolean;
   onClose?: () => void;
   onSuccess?: (message: string) => void;
+  mode?: "add" | "edit";
+  patient?: Patient;
 }) => {
-  const [formData, setFormData] = useState({
-    fullName: "",
-    age: "",
-    gender: "",
-    guardianName: "",
-    phoneNumber: "",
-    address: "",
-    occupation: "",
-    medicalHistory: "",
+  const getInitialFormData = (patient?: Patient) => ({
+    fullName: patient?.name ?? "",
+    age: patient?.age?.toString() ?? "",
+    gender: patient?.gender ?? "",
+    guardianName: patient?.guardian ?? "",
+    phoneNumber: patient?.phone ?? "",
+    address: patient?.address ?? "",
+    occupation: patient?.occupation ?? "",
+    medicalHistory: patient?.medicalHistory ?? "",
   });
 
+  const [formData, setFormData] = useState(() => getInitialFormData(patient));
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [phoneError, setPhoneError] = useState<string>("");
-  const [formState, formAction, isPending] = useActionState<
-    AddPatientActionState,
-    FormData
-  >(
-    addPatient,
-    { status: "idle", message: "" },
-  );
+
+  // No reset useEffect needed — parent should pass key={patient?.id ?? "add"}
+  // so React remounts this component cleanly when the patient changes.
+
+  const patientAction = async (
+    prevState: AddPatientActionState,
+    formData: FormData
+  ) => {
+    if (mode === "edit" && patient) {
+      return editPatient(patient.id, prevState, formData);
+    }
+    return addPatient(prevState, formData);
+  };
+
+  const [formState, formAction, isPending] = useActionState(patientAction, {
+    status: "",
+    message: "",
+  });
 
   useEffect(() => {
     if (formState.status === "success") {
       onSuccess(formState.message);
       onClose();
     }
-  }, [formState.status, formState.message, onClose, onSuccess]);
+  }, [formState.status, formState.message]);
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  if (!open) {
-    return null;
-  }
+  if (!open) return null;
 
   return (
     <form
@@ -81,12 +96,14 @@ export const AddPatient = ({
             </div>
             <div>
               <h2 className="text-2xl font-bold tracking-tight">
-                Add New Patient
+                {mode === "edit" ? "Edit Patient" : "Add New Patient"}
               </h2>
               <div className="flex items-center gap-2 mt-1 text-white/90">
                 <Clock className="w-3.5 h-3.5" />
                 <span className="text-sm font-medium">
-                  Complete registration form
+                  {mode === "edit"
+                    ? "Update patient information"
+                    : "Complete registration form"}
                 </span>
               </div>
             </div>
@@ -301,7 +318,7 @@ export const AddPatient = ({
                         !/^\d{4}-\d{7}$/.test(formData.phoneNumber)
                       ) {
                         setPhoneError(
-                          "Please enter a valid phone number (e.g., 03XX-XXXXXXX)",
+                          "Please enter a valid phone number (e.g., 03XX-XXXXXXX)"
                         );
                       } else {
                         setPhoneError("");
@@ -367,7 +384,6 @@ export const AddPatient = ({
           </div>
 
           <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 p-6 hover:shadow-md transition-shadow">
-            {/* Medical History */}
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-2">
                 Medical History
@@ -419,7 +435,11 @@ export const AddPatient = ({
             disabled={isPending}
             className="px-6 py-3 cursor-pointer rounded-xl font-semibold text-white bg-[var(--primary)] hover:bg-[var(--primary-dark)] transition-all shadow-lg active:scale-[0.98] text-[15px] disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            {isPending ? "Saving..." : "Save Patient"}
+            {isPending
+              ? "Saving..."
+              : mode === "edit"
+                ? "Update Patient"
+                : "Save Patient"}
           </button>
         </div>
       </div>
@@ -454,7 +474,6 @@ export const AddPatient = ({
           );
         }
 
-        /* Animation for pulsing dot */
         @keyframes pulse {
           0%,
           100% {

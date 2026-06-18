@@ -39,7 +39,6 @@ export const ViewVisitModal = ({
     paymentAPI
       .get(`visit/${visit.id}`)
       .then((res) => {
-        console.log("Payment History:", res?.data);
         if (active) setPayments(res?.data?.payments ?? []);
       })
       .catch(() => {

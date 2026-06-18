@@ -63,6 +63,7 @@ export function QuickActionsClient({ actions }: Props) {
       >
         <div onClick={(e) => e.stopPropagation()}>
           <AddPatient
+            mode="add"  
             open={isAddPatientOpen}
             onClose={() => setActiveModal(null)}
             onSuccess={(message) => {
