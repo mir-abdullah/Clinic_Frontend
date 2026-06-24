@@ -460,7 +460,7 @@ import { useActionState, useState, useEffect } from "react";
                 </div>
               </div>
 
-              {/* <input type="hidden" name="patientId" value={selectedPatient.id} /> */}
+              <input type="hidden" name="patientId" value={selectedPatient.id} />
               <input type="hidden" name="status" value="SCHEDULED" />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">

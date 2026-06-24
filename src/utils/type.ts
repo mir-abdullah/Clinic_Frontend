@@ -139,3 +139,44 @@ export type Payment = {
   createdAt: string;
   updatedAt: string;
 }
+
+
+//apointments
+
+export type AppointmentStatus =
+  | "SCHEDULED"
+  | "CHECKED_IN"
+  | "IN_PROGRESS"
+  | "COMPLETED"
+  | "CANCELLED"
+  | "NO_SHOW";
+ 
+export type AppointmentWithPatient = {
+  id: string;
+  patientId: string;
+  patient: { id: string; name: string; phone: string };
+  status: AppointmentStatus;
+  doctorName: string | null;
+  date: string;   // ISO string from backend e.g. "2026-06-19T00:00:00.000Z"
+  time: string;   // "09:00"
+  reason: string | null;
+  notes: string | null;
+  reminderSent: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+ 
+export type PaginatedAppointments = {
+  appointments: AppointmentWithPatient[];
+  total: number;
+  totalPages: number;
+  page: number;
+};
+ 
+// ─── Action state types (same shape as your AddPatientActionState) ────────────
+ 
+export type AppointmentActionState = {
+  status: "idle" | "success" | "error";
+  message: string;
+};
+ 

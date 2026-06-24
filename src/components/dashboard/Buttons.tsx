@@ -32,6 +32,7 @@ export const Buttons = () => {
                     open={isBookAppointmentOpen}
                     onClose={() => setIsBookAppointmentOpen(false)}
                     onSuccess={() => setIsBookAppointmentOpen(false)}
+                    
                 />
              )}
          </>
