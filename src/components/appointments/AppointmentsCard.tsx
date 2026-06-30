@@ -194,7 +194,7 @@ export default function AppointmentCard({ appointment: initial }: Props) {
             )}
           </div>
         )}
-      </div>
+      </div>  
     </div>
   );
 }

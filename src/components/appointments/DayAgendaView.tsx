@@ -41,7 +41,7 @@ export default function DayAgendaView({ appointments, onBookSlot }: Props) {
   }
 
   return map;
-}, [appointments]);
+}, [appointments]); 
 
   if (appointments.length === 0) {
     return (

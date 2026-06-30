@@ -11,46 +11,51 @@ import {
   MapPin,
 } from "lucide-react";
 import { useActionState, useState, useEffect } from "react";
-  import { toast } from "sonner";
-  import { addAppointment } from "@/actions/appointments";
-  import { patientAPI } from "@/utils/api";
-  import { Patient, addAppointmentActionState } from "@/utils/type";
+import { toast } from "sonner";
+import { addAppointment } from "@/actions/appointments";
+import { patientAPI } from "@/utils/api";
+import { Patient, addAppointmentActionState } from "@/utils/type";
+import { visitReasons } from "@/utils/data";
 
-  type Step = "choice" | "search" | "new-patient" | "appointment";
+type Step = "choice" | "search" | "new-patient" | "appointment";
 
-  export const BookAppointment = ({
-    open = true,
-    onClose = () => {},
-    onSuccess = () => {},
-  }: {
-    open?: boolean;
-    onClose?: () => void;
-    onSuccess?: (message: string) => void;
-  }) => {
-    const [step, setStep] = useState<Step>("choice");
-    const [searchQuery, setSearchQuery] = useState("");
-    const [searchResults, setSearchResults] = useState<Patient[]>([]);
-    const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
-    const [isSearching, setIsSearching] = useState(false);
+export const BookAppointment = ({
+  open = true,
+  onClose = () => {},
+  onSuccess = () => {},
+}: {
+  open?: boolean;
+  onClose?: () => void;
+  onSuccess?: (message: string) => void;
+}) => {
+  const [step, setStep] = useState<Step>("choice");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<Patient[]>([]);
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
+  const [selectedReason, setSelectedReason] = useState("");
+  const isCustom =
+    selectedReason === "Other · Custom Reason" ||
+    selectedReason === "Other · Not Listed";
 
-    const [state, action, isPending] = useActionState<
-      addAppointmentActionState,
-      FormData
-    >(addAppointment, {
-      status: "idle",
-      message: "",
-    });
+  const [state, action, isPending] = useActionState<
+    addAppointmentActionState,
+    FormData
+  >(addAppointment, {
+    status: "idle",
+    message: "",
+  });
 
-    // Handle success/error messages
-    useEffect(() => {
-      if (state.status === "success") {
-        toast.success(state.message);
-        onSuccess(state.message);
-        onClose();
-      } else if (state.status === "error") {
-        toast.error(state.message);
-      }
-    }, [state.status, state.message, onClose, onSuccess]);
+  // Handle success/error messages
+  useEffect(() => {
+    if (state.status === "success") {
+      toast.success(state.message);
+      onSuccess(state.message);
+      onClose();
+    } else if (state.status === "error") {
+      toast.error(state.message);
+    }
+  }, [state.status, state.message, onClose, onSuccess]);
 
   const handleSearch = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value;
@@ -73,7 +78,9 @@ import { useActionState, useState, useEffect } from "react";
         patients.filter((patient: Patient) => {
           const name = patient.name?.toLowerCase() || "";
           const phone = patient.phone?.toLowerCase() || "";
-          return name.includes(normalizedQuery) || phone.includes(normalizedQuery);
+          return (
+            name.includes(normalizedQuery) || phone.includes(normalizedQuery)
+          );
         }),
       );
     } catch {
@@ -373,15 +380,14 @@ import { useActionState, useState, useEffect } from "react";
                     <label className="block text-sm font-semibold text-slate-700 mb-2">
                       Doctor Name
                     </label>
-                    <div className="relative">
-                      <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                      <input
-                        type="text"
-                        name="doctorName"
-                        placeholder="Doctor's name (optional)"
-                        className="w-full pl-12 pr-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-slate-700 focus:bg-white transition-all"
-                      />
-                    </div>
+                    <select
+                      name="doctorName"
+                      defaultValue="Dr. Maryam"
+                      className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-slate-700 focus:bg-white transition-all"
+                    >
+                      <option value="Dr. Maryam">Dr. Maryam</option>
+                      <option value="Dr. Zahid">Dr. Zahid</option>
+                    </select>
                   </div>
 
                   {/* Reason */}
@@ -389,14 +395,43 @@ import { useActionState, useState, useEffect } from "react";
                     <label className="block text-sm font-semibold text-slate-700 mb-2">
                       Reason for Visit
                     </label>
-                    <input
-                      type="text"
-                      name="reason"
-                      placeholder="e.g., Checkup, Cleaning, Emergency..."
+                    <select
+                      name={isCustom ? undefined : "reason"}
+                      value={selectedReason}
+                      onChange={(e) => setSelectedReason(e.target.value)}
                       className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-slate-700 focus:bg-white transition-all"
-                    />
+                    >
+                      <option value="">Select a reason</option>
+                      {visitReasons.map((group) => (
+                        <optgroup key={group.category} label={group.category}>
+                          {group.reasons.map((reason) => {
+                            const value = `${group.category} · ${reason}`;
+                            return (
+                              <option key={value} value={value}>
+                                {reason}
+                              </option>
+                            );
+                          })}
+                        </optgroup>
+                      ))}
+                    </select>
                   </div>
 
+                  {/* Custom reason input shown only for "Other" options */}
+                  {isCustom && (
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">
+                        Describe Reason <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="reason"
+                        required
+                        placeholder="Enter custom reason..."
+                        className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-slate-700 focus:bg-white transition-all"
+                      />
+                    </div>
+                  )}
                   {/* Notes */}
                   <div className="md:col-span-2">
                     <label className="block text-sm font-semibold text-slate-700 mb-2">
@@ -415,11 +450,7 @@ import { useActionState, useState, useEffect } from "react";
                 </div>
 
                 {/* Hidden Status */}
-                <input
-                  type="hidden"
-                  name="status"
-                  value="SCHEDULED"
-                />
+                <input type="hidden" name="status" value="SCHEDULED" />
               </section>
 
               {/* Footer */}
@@ -460,7 +491,11 @@ import { useActionState, useState, useEffect } from "react";
                 </div>
               </div>
 
-              <input type="hidden" name="patientId" value={selectedPatient.id} />
+              <input
+                type="hidden"
+                name="patientId"
+                value={selectedPatient.id}
+              />
               <input type="hidden" name="status" value="SCHEDULED" />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -501,15 +536,14 @@ import { useActionState, useState, useEffect } from "react";
                   <label className="block text-sm font-semibold text-slate-700 mb-2">
                     Doctor Name
                   </label>
-                  <div className="relative">
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                    <input
-                      type="text"
-                      name="doctorName"
-                      placeholder="Doctor's name (optional)"
-                      className="w-full pl-12 pr-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-slate-700 focus:bg-white transition-all"
-                    />
-                  </div>
+                  <select
+                    name="doctorName"
+                    defaultValue="Dr. Maryam"
+                    className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-slate-700 focus:bg-white transition-all"
+                  >
+                    <option value="Dr. Maryam">Dr. Maryam</option>
+                    <option value="Dr. Zahid">Dr. Zahid</option>
+                  </select>
                 </div>
 
                 {/* Reason */}
@@ -517,13 +551,43 @@ import { useActionState, useState, useEffect } from "react";
                   <label className="block text-sm font-semibold text-slate-700 mb-2">
                     Reason for Visit
                   </label>
-                  <input
-                    type="text"
-                    name="reason"
-                    placeholder="e.g., Checkup, Cleaning, Emergency..."
+                  <select
+                    name={isCustom ? undefined : "reason"}
+                    value={selectedReason}
+                    onChange={(e) => setSelectedReason(e.target.value)}
                     className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-slate-700 focus:bg-white transition-all"
-                  />
+                  >
+                    <option value="">Select a reason</option>
+                    {visitReasons.map((group) => (
+                      <optgroup key={group.category} label={group.category}>
+                        {group.reasons.map((reason) => {
+                          const value = `${group.category} · ${reason}`;
+                          return (
+                            <option key={value} value={value}>
+                              {reason}
+                            </option>
+                          );
+                        })}
+                      </optgroup>
+                    ))}
+                  </select>
                 </div>
+
+                {/* Custom reason input shown only for "Other" options */}
+                {isCustom && (
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">
+                      Describe Reason <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="reason"
+                      required
+                      placeholder="Enter custom reason..."
+                      className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-slate-700 focus:bg-white transition-all"
+                    />
+                  </div>
+                )}
 
                 {/* Notes */}
                 <div className="md:col-span-2">
@@ -569,6 +633,3 @@ import { useActionState, useState, useEffect } from "react";
     </div>
   );
 };
-
-
-

@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { toast } from "sonner";
 import { RecordPaymentModal } from "@/components/modals/RecordPayment";
 import { ViewVisitModal } from '../modals/ViewVisitDetails';
+import { sendReceipt } from '@/utils/helpers';
 
 const VisitActions = ({ visit }: { visit: Visit }) => {
       const [recordPaymentOpen, setRecordPaymentOpen] = useState(false);
@@ -29,6 +30,13 @@ const VisitActions = ({ visit }: { visit: Visit }) => {
             💳
           </button>
         )}
+        <button
+          className="h-8 w-8 rounded-md border border-border bg-(--bg-primary) hover:bg-(--bg-secondary) transition cursor-pointer"
+          title="Send Receipt"
+          onClick={() => sendReceipt(visit)}
+        >
+            📤
+        </button>
         {
           recordPaymentOpen && (
             <RecordPaymentModal 

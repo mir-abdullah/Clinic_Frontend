@@ -1,4 +1,4 @@
-import { Appointment } from "./type";
+import { Appointment, Visit } from "./type";
 
 export const getUpcomingAppointment = (appointments: Appointment[]) => {
   const now = new Date();
@@ -25,36 +25,104 @@ export const getUpcomingAppointment = (appointments: Appointment[]) => {
     .filter((appt) => appt.appointmentDateTime >= now)
     .sort(
       (a, b) =>
-        a.appointmentDateTime.getTime() -
-        b.appointmentDateTime.getTime()
+        a.appointmentDateTime.getTime() - b.appointmentDateTime.getTime(),
     );
 
   return futureAppointments.length > 0 ? futureAppointments[0] : null;
 };
 
-      const getOrdinal = (n: number) => {
-          const s = n % 100;
-          if (s >= 11 && s <= 13) return "th";
-          switch (n % 10) {
-              case 1:
-                  return "st";
-              case 2:
-                  return "nd";
-              case 3:
-                  return "rd";
-              default:
-                  return "th";
-          }
-      };
-  
-    export   const formatDateWithOrdinal = (value: Date | string | null | undefined) => {
-          if (!value) return "";
-          const d = typeof value === "string" ? new Date(value) : value;
-          if (Number.isNaN(d.getTime())) return "Invalid date";
-          const day = d.getDate();
-          const month = d.toLocaleString(undefined, { month: "long" });
-          const year = d.getFullYear();
-          return `${day}${getOrdinal(day)} ${month} ${year}`;
-      };
-  
+const getOrdinal = (n: number) => {
+  const s = n % 100;
+  if (s >= 11 && s <= 13) return "th";
+  switch (n % 10) {
+    case 1:
+      return "st";
+    case 2:
+      return "nd";
+    case 3:
+      return "rd";
+    default:
+      return "th";
+  }
+};
 
+export const formatDateWithOrdinal = (
+  value: Date | string | null | undefined,
+) => {
+  if (!value) return "";
+  const d = typeof value === "string" ? new Date(value) : value;
+  if (Number.isNaN(d.getTime())) return "Invalid date";
+  const day = d.getDate();
+  const month = d.toLocaleString(undefined, { month: "long" });
+  const year = d.getFullYear();
+  return `${day}${getOrdinal(day)} ${month} ${year}`;
+};
+
+export const sendReceipt = (visit: Visit) => {
+  if (!visit) {
+    alert("No visit found to send receipt.");
+    return;
+  }
+
+  const formatPhoneForWhatsApp = (rawPhone: string | undefined) => {
+    let digits = (rawPhone || "").replace(/\D/g, "");
+    if (digits.startsWith("0")) {
+      digits = "92" + digits.slice(1);
+    }
+    return digits;
+  };
+
+  const phone = formatPhoneForWhatsApp(visit?.patient?.phone);
+
+  if (!phone || phone.length < 11) {
+    alert("Patient phone number is missing or invalid.");
+    return;
+  }
+
+  const formatMoney = (amount: number | null | undefined) =>
+    `Rs. ${Number(amount || 0).toLocaleString()}`;
+
+  const credit = visit?.paidAmount || 0;
+  const balance = visit?.dueAmount || 0;
+
+  let paymentLines = `💵 Total Bill: *${formatMoney(visit?.totalAmount)}*`;
+
+  if (credit > 0) {
+    paymentLines += `\n💳 Paid: ${formatMoney(credit)}`;
+  }
+
+  if (balance > 0) {
+    paymentLines += `\n📌 Balance Due: *${formatMoney(balance)}*`;
+  } else {
+    paymentLines += `\n✅ _Fully Paid_`;
+  }
+
+  // Conditionally build clinical section — only included if present
+  let clinicalLines = "";
+  if (visit?.diagnosis) {
+    clinicalLines += `\n🩺 Diagnosis: ${visit.diagnosis}`;
+  }
+  if (visit?.prescription) {
+    clinicalLines += `\n💊 Prescription: ${visit.prescription}`;
+  }
+
+  const message = `🦷 *MEHREEN DENTAL CLINIC* 🦷
+_Visit Receipt_
+
+👤 Patient: *${visit?.patient?.name}*
+📞 Contact: ${visit?.patient?.phone}
+👨‍⚕️ Doctor: ${visit?.doctorName}
+
+📅 Date: ${formatDateWithOrdinal(visit?.date)}
+⏰ Time: ${visit?.time}
+💼 Service: ${visit?.reason || "General Checkup"}${clinicalLines}
+
+${paymentLines}
+
+✨ Thank you for visiting *Mehreen Dental Clinic*.
+We look forward to your next visit! 🦷`;
+
+  const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+
+  window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+};
