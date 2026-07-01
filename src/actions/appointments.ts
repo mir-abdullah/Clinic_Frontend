@@ -2,6 +2,8 @@
 import { addAppointmentDTO ,addAppointmentActionState} from "@/utils/type";
 import { appointmentAPI } from "@/utils/api";
 import { revalidatePath } from "next/cache";
+import {  AppointmentActionState, AppointmentStatus } from "@/utils/type";
+
 
 export async function addAppointment(
     
@@ -46,7 +48,6 @@ export async function addAppointment(
 }
 
 
-import {  AppointmentActionState, AppointmentStatus } from "@/utils/type";
 
 
 // ─── Helper: extract error message from axios error (same as your patient actions) ──
@@ -99,7 +100,7 @@ export async function cancelAppointment(
   appointmentId: string,
 ): Promise<AppointmentActionState> {
   try {
-    await appointmentAPI.patch(`/${appointmentId}/status`, { status: "CANCELLED" });
+    await appointmentAPI.patch(`/${appointmentId}/status`);
     revalidatePath("/appointments");
     return { status: "success", message: "Appointment cancelled." };
   } catch (err) {

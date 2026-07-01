@@ -7,8 +7,8 @@ import AppointmentCard from "./AppointmentsCard";
 import type { AppointmentWithPatient } from "@/utils/type";
 
 // Clinic hours: 2pm – 6pm in 30-min slots
-const SLOTS = Array.from({ length: 9 }, (_, i) => {
-  const totalMinutes = 14 * 60 + i * 30;  // start at 14:00
+const SLOTS = Array.from({ length: 22 }, (_, i) => {
+  const totalMinutes = 12 * 60 + i * 30;  // start at 14:00
   const h = Math.floor(totalMinutes / 60);
   const m = totalMinutes % 60;
   return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
@@ -35,7 +35,7 @@ export default function DayAgendaView({ appointments, onBookSlot }: Props) {
     const bucket = `${String(bh).padStart(2, "0")}:${String(bm).padStart(2, "0")}`;
 
     // Only include if within clinic hours
-    if (bucketMins >= 14 * 60 && bucketMins < 18 * 60 + 30) {
+    if (bucketMins >= 12 * 60 && bucketMins < 22 * 60 + 30) {
       map.set(bucket, [...(map.get(bucket) ?? []), appt]);
     }
   }

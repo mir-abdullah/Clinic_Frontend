@@ -8,6 +8,17 @@
   --primary: oklch(0.205 0 0);
             --primary-dark: #4A7FB8;
             --primary-light: #E8F2FA;
+            --border-secondary: var(--border);
+            --border-tertiary: oklch(0.95 0 0);
+            --text-tertiary: var(--text-light);
+            --info-text: var(--primary-dark);
+            --info-bg: var(--primary-light);
+            --success-text: #15803D;
+            --success-bg: #ECFDF5;
+            --warning-text: #B45309;
+            --warning-bg: #FFFBEB;
+            --danger-text: #B91C1C;
+            --danger-bg: #FEF2F2;
             --success: #52C41A;
             --warning: #FAAD14;
             --danger: #F5222D;

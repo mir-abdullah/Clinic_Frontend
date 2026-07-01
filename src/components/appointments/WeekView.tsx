@@ -38,7 +38,7 @@ export default function WeekView({ appointments, currentDate, onDayClick }: Prop
   const today = format(new Date(), "yyyy-MM-dd");
 
   return (
-    <div className="grid grid-cols-7 gap-px bg-(--border-secondary) rounded-lg overflow-hidden border border-(--border-secondary)">
+    <div className="grid grid-cols-7 gap-px overflow-hidden rounded-2xl border border-(--border-secondary) bg-(--border-secondary) shadow-sm">
       {weekDays.map(({ date, label, day }) => {
         const dayAppts = byDate.get(date) ?? [];
         const isToday = date === today;
@@ -47,23 +47,26 @@ export default function WeekView({ appointments, currentDate, onDayClick }: Prop
         return (
           <div
             key={date}
-            className="bg-(--bg-primary) min-h-[200px]"
+            className={`bg-(--bg-primary) ${isSelected ? "ring-2 ring-inset ring-(--info-text)/20" : ""}`}
+            style={{ minHeight: 220 }}
           >
             {/* Day header */}
             <button
               onClick={() => onDayClick?.(date)}
-              className={`w-full px-2 py-2.5 text-center border-b border-(--border-secondary) hover:bg-(--bg-secondary) transition-colors ${
-                isSelected ? "bg-(--info-bg)" : ""
+              className={`w-full px-2 py-3 text-center border-b border-(--border-secondary) transition-colors ${
+                isSelected ? "bg-(--primary-light)" : "hover:bg-(--bg-secondary)"
               }`}
             >
-              <p className="text-xs text-(--text-tertiary) uppercase tracking-wider font-semibold">
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-(--text-tertiary)">
                 {label}
               </p>
               <p
                 className={`text-sm font-bold mt-0.5 w-7 h-7 flex items-center justify-center mx-auto rounded-full ${
                   isToday
-                    ? "bg-(--info-text) text-white"
-                    : "text-(--text-primary)"
+                    ? "bg-primary text-white shadow-sm"
+                    : isSelected
+                      ? "bg-(--info-bg) text-(--info-text)"
+                      : "text-(--text-primary)"
                 }`}
               >
                 {day}
@@ -71,22 +74,25 @@ export default function WeekView({ appointments, currentDate, onDayClick }: Prop
             </button>
 
             {/* Appointments for this day */}
-            <div className="p-1.5 space-y-1">
+            <div className="space-y-2 p-2">
               {dayAppts.length === 0 ? (
-                <p className="text-xs text-(--text-tertiary) text-center py-4 opacity-50">
+                <p className="py-5 text-center text-xs text-(--text-tertiary) opacity-50">
                   —
                 </p>
               ) : (
                 dayAppts.map((appt) => (
                   <div
                     key={appt.id}
-                    className="px-2 py-1.5 rounded-md bg-(--bg-secondary) hover:bg-(--border-secondary) cursor-pointer transition-colors"
+                    className="cursor-pointer rounded-xl border border-(--border-secondary) bg-(--bg-secondary) px-2.5 py-2 transition-all hover:-translate-y-0.5 hover:bg-(--primary-light) hover:shadow-sm"
                     title={`${appt.patient.name} · ${appt.time} · ${appt.reason ?? ""}`}
                   >
-                    <p className="text-xs font-medium text-(--text-primary) truncate">
+                    <p className="truncate text-xs font-semibold text-(--text-primary)">
                       {appt.time} {appt.patient.name}
                     </p>
-                    <div className="mt-0.5">
+                    <p className="truncate text-xs text-black)">
+                      {appt.reason ?? "—"}
+                    </p>
+                    <div className="mt-1">
                       <AppointmentStatusBadge status={appt.status} />
                     </div>
                   </div>

@@ -9,32 +9,32 @@ const CONFIG: Record<
 > = {
   SCHEDULED: {
     label: "Scheduled",
-    className: "bg-(--info-bg) text-(--info-text)",
+    className: "bg-(--info-bg) text-(--info-text) ring-1 ring-(--info-text)/10",
     dot: "bg-(--info-text)",
   },
   CHECKED_IN: {
     label: "Checked in",
-    className: "bg-(--success-bg) text-(--success-text)",
+    className: "bg-(--success-bg) text-(--success-text) ring-1 ring-(--success-text)/10",
     dot: "bg-(--success-text)",
   },
   IN_PROGRESS: {
     label: "In progress",
-    className: "bg-(--warning-bg) text-(--warning-text)",
+    className: "bg-(--warning-bg) text-(--warning-text) ring-1 ring-(--warning-text)/10",
     dot: "bg-(--warning-text)",
   },
   COMPLETED: {
     label: "Completed",
-    className: "bg-(--success-bg) text-(--success-text)",
+    className: "bg-(--success-bg) text-(--success-text) ring-1 ring-(--success-text)/10",
     dot: "bg-(--success-text)",
   },
   CANCELLED: {
     label: "Cancelled",
-    className: "bg-(--bg-secondary) text-(--text-tertiary)",
+    className: "bg-(--bg-secondary) text-(--text-tertiary) ring-1 ring-(--border-secondary)/60",
     dot: "bg-(--text-tertiary)",
   },
   NO_SHOW: {
     label: "No show",
-    className: "bg-(--danger-bg) text-(--danger-text)",
+    className: "bg-(--danger-bg) text-(--danger-text) ring-1 ring-(--danger-text)/10",
     dot: "bg-(--danger-text)",
   },
 };
@@ -56,7 +56,7 @@ export default function AppointmentStatusBadge({
   const cfg = CONFIG[status];
   return (
     <span
-      className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-md ${cfg.className}`}
+      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${cfg.className}`}
     >
       <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
       {cfg.label}

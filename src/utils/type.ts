@@ -43,7 +43,7 @@ export type AddPatientActionState = {
 export type Appointment = {
   id: string;
   patientId: string;
-  status: "SCHEDULED" | "COMPLETED" | "CANCELED";
+  status: "SCHEDULED" | "COMPLETED" | "CANCELED" | "NO_SHOW";
   doctorName?: string;
   date: string;
   time: string;

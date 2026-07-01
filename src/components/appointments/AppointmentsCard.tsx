@@ -16,10 +16,10 @@ import {
 import AppointmentStatusBadge, { BORDER_COLOR } from "./AppointmentStatusBadge";
 import {
   updateAppointmentStatus,
-  sendAppointmentReminder,
   cancelAppointment,
 } from "../../actions/appointments";
 import type { AppointmentWithPatient } from "@/utils/type";
+import {sendAppointmentReminder} from "@/utils/helpers";
 
 const NEXT_STATUSES: Partial<Record<AppointmentStatus, AppointmentStatus[]>> = {
   SCHEDULED:   ["CHECKED_IN", "CANCELLED", "NO_SHOW"],
@@ -40,18 +40,17 @@ export default function AppointmentCard({ appointment: initial }: Props) {
   const [isPending, startTransition] = useTransition();
 
   const nextStatuses = NEXT_STATUSES[appt.status] ?? [];
-  const isTerminal = nextStatuses.length === 0;
 
   // ── Status update ────────────────────────────────────────────────────────
   const handleStatusChange = (status: AppointmentStatus) => {
     setShowActions(false);
     startTransition(async () => {
       const res = await updateAppointmentStatus(appt.id, status);
-      if (res.success) {
+      if (res.status === "success") {
         setAppt((prev) => ({ ...prev, status }));
-        toast.success("Status updated");
+        toast.success(res.message);
       } else {
-        toast.error(res.error ?? "Failed to update status");
+        toast.error(res.message);
       }
     });
   };
@@ -60,95 +59,116 @@ export default function AppointmentCard({ appointment: initial }: Props) {
   const handleCancel = () => {
     startTransition(async () => {
       const res = await cancelAppointment(appt.id);
-      if (res.success) {
+      if (res.status === "success") {
         setAppt((prev) => ({ ...prev, status: "CANCELLED" }));
-        toast.success("Appointment cancelled");
+        toast.success(res.message);
       } else {
-        toast.error(res.error ?? "Failed to cancel");
+        toast.error(res.message);
       }
     });
   };
 
   // ── Reminder ─────────────────────────────────────────────────────────────
-  const handleReminder = () => {
-    startTransition(async () => {
-      const res = await sendAppointmentReminder(appt.id);
-      if (res.success) {
-        setAppt((prev) => ({ ...prev, reminderSent: true }));
-        toast.success(`Reminder sent to ${appt.patient.name}`);
-      } else {
-        toast.error(res.error ?? "Failed to send reminder");
-      }
-    });
-  };
+
 
   const isCancelledOrDone =
     appt.status === "CANCELLED" ||
     appt.status === "NO_SHOW" ||
     appt.status === "COMPLETED";
 
-  return (
-    <div
-      className={`group relative bg-(--bg-primary) border border-(--border-secondary) border-l-4 ${BORDER_COLOR[appt.status]} rounded-lg px-4 py-3 transition-shadow hover:shadow-sm ${
-        isCancelledOrDone ? "opacity-60" : ""
-      } ${isPending ? "opacity-50 pointer-events-none" : ""}`}
-    >
+  const toneClass =
+    appt.status === "SCHEDULED"
+      ? "from-(--info-bg) via-(--bg-primary) to-(--bg-primary)"
+      : appt.status === "CHECKED_IN"
+        ? "from-(--success-bg) via-(--bg-primary) to-(--bg-primary)"
+        : appt.status === "IN_PROGRESS"
+          ? "from-(--warning-bg) via-(--bg-primary) to-(--bg-primary)"
+          : appt.status === "COMPLETED"
+            ? "from-(--success-bg) via-(--bg-primary) to-(--bg-primary)"
+            : "from-(--danger-bg) via-(--bg-primary) to-(--bg-primary)";
+
+return (
+  <div
+    className={`group relative rounded-2xl border border-(--border-secondary) shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md ${
+      isCancelledOrDone ? "opacity-60" : ""
+    } ${isPending ? "opacity-50 pointer-events-none" : ""}`}
+  >
+    {/* background gradient + left status strip, clipped to rounded corners */}
+    <div className={`absolute inset-0 overflow-hidden rounded-2xl bg-linear-to-r ${toneClass}`}>
+      <div className={`absolute inset-y-0 left-0 w-1.5 ${BORDER_COLOR[appt.status]}`} />
+    </div>
+
+    {/* actual content, not clipped so dropdowns can overflow */}
+    <div className="relative z-10 px-4 py-4">
       <div className="flex items-start justify-between gap-3">
         {/* Left: patient info */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <p
-              className={`text-sm font-semibold text-(--text-primary) ${
-                isCancelledOrDone ? "line-through" : ""
-              }`}
-            >
-              {appt.patient.name}
-            </p>
-            <AppointmentStatusBadge status={appt.status} />
-            {appt.reminderSent && (
-              <span className="text-xs text-(--text-tertiary) flex items-center gap-1">
-                <BellOff size={11} />
-                Reminded
-              </span>
-            )}
-          </div>
+          <div className="flex items-start gap-3">
+            <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/70 bg-white/80 text-sm font-semibold text-(--text-primary) shadow-sm`}>
+              {appt.patient.name
+                .split(" ")
+                .map((part) => part[0])
+                .slice(0, 2)
+                .join("")
+                .toUpperCase()}
+            </div>
 
-          <div className="flex flex-wrap items-center gap-3 mt-1.5">
-            <span className="flex items-center gap-1 text-xs text-(--text-secondary)">
-              <Clock size={12} />
-              {appt.time}
-            </span>
-            {appt.reason && (
-              <span className="flex items-center gap-1 text-xs text-(--text-secondary)">
-                <FileText size={12} />
-                {appt.reason}
-              </span>
-            )}
-            <span className="flex items-center gap-1 text-xs text-(--text-tertiary)">
-              <User size={12} />
-              {appt.patient.phone}
-            </span>
-          </div>
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <p
+                  className={`text-sm font-semibold text-(--text-primary) ${
+                    isCancelledOrDone ? "line-through" : ""
+                  }`}
+                >
+                  {appt.patient.name}
+                </p>
+                <AppointmentStatusBadge status={appt.status} />
+                {appt.reminderSent && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-white/70 px-2 py-1 text-[11px] font-medium text-(--text-secondary)">
+                    <BellOff size={11} />
+                    Reminded
+                  </span>
+                )}
+              </div>
 
-          {appt.notes && (
-            <p className="mt-1.5 text-xs text-(--text-tertiary) italic line-clamp-1">
-              {appt.notes}
-            </p>
-          )}
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-1 rounded-full bg-white/75 text-black px-2.5 py-1 text-xs font-medium  shadow-sm">
+                  <Clock size={12} />
+                  {appt.time}
+                </span>
+                {appt.reason && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-white/75 text-black px-2.5 py-1 text-xs font-medium  shadow-sm">
+                    <FileText size={12} />
+                    {appt.reason}
+                  </span>
+                )}
+                <span className="inline-flex items-center gap-1 rounded-full bg-white/75 text-black px-2.5 py-1 text-xs font-medium  shadow-sm">
+                  <User size={12} />
+                  {appt.patient.phone}
+                </span>
+              </div>
+
+              {appt.notes && (
+                <p className="mt-2 max-w-3xl rounded-xl border border-white/60 bg-white/65 px-3 py-2 text-xs italic text-(--text-secondary) line-clamp-2 shadow-sm">
+                  {appt.notes}
+                </p>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Right: actions */}
         {!isCancelledOrDone && (
-          <div className="flex items-center gap-1.5 shrink-0">
+          <div className="flex items-center gap-2 shrink-0">
             {/* Send reminder */}
             <button
-              onClick={handleReminder}
+              onClick={() => sendAppointmentReminder(appt)}
               disabled={appt.reminderSent || isPending}
               title={appt.reminderSent ? "Reminder already sent" : "Send reminder"}
-              className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md border font-medium transition-colors ${
+              className={`flex items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-medium transition-all cursor-pointer hover:text-blue-700  ${
                 appt.reminderSent
-                  ? "border-(--border-secondary) text-(--text-tertiary) cursor-not-allowed"
-                  : "border-(--info-text) text-(--info-text) hover:bg-(--info-bg)"
+                  ? "border-white/60 bg-white/50 text-(--text-tertiary) cursor-not-allowed"
+                  : "border-white/70 bg-white/80 text-(--info-text) hover:bg-white"
               }`}
             >
               <Bell size={13} />
@@ -160,19 +180,22 @@ export default function AppointmentCard({ appointment: initial }: Props) {
               <div className="relative">
                 <button
                   onClick={() => setShowActions((p) => !p)}
-                  className="flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-md bg-(--info-text) text-white font-medium hover:opacity-90 transition-opacity"
+                  className="flex cursor-pointer items-center gap-1 rounded-xl bg-primary px-3 py-2 text-xs font-medium text-white shadow-sm transition hover:bg-(--primary-dark)"
                 >
                   Move to
                   <ChevronDown size={13} />
                 </button>
 
                 {showActions && (
-                  <div className="absolute right-0 top-full mt-1 z-20 bg-(--bg-primary) border border-(--border-secondary) rounded-lg shadow-lg overflow-hidden min-w-[140px]">
+                  <div
+                    className="absolute right-0 top-full z-20 mt-2 rounded-2xl border border-(--border-secondary) bg-(--bg-primary) shadow-xl"
+                    style={{ minWidth: 140 }}
+                  >
                     {nextStatuses.map((s) => (
                       <button
                         key={s}
                         onClick={() => handleStatusChange(s)}
-                        className="w-full text-left px-3 py-2 text-xs hover:bg-(--bg-secondary) text-(--text-primary) transition-colors"
+                        className="flex w-full items-center justify-between px-3 py-2.5 text-xs text-(--text-primary) transition-colors hover:bg-(--bg-secondary)"
                       >
                         <AppointmentStatusBadge status={s} />
                       </button>
@@ -187,14 +210,15 @@ export default function AppointmentCard({ appointment: initial }: Props) {
               <button
                 onClick={handleCancel}
                 title="Cancel appointment"
-                className="p-1.5 rounded-md border border-(--border-secondary) text-(--text-tertiary) hover:border-(--danger-text) hover:text-(--danger-text) transition-colors"
+                className="rounded-xl border cursor-pointer border-white/70 bg-white/80 p-2 text-(--text-tertiary) transition-colors hover:border-(--danger-text) hover:text-(--danger-text)"
               >
                 <X size={14} />
               </button>
             )}
           </div>
         )}
-      </div>  
+      </div>
     </div>
-  );
+  </div>
+);
 }

@@ -554,6 +554,7 @@ export const BookAppointment = ({
                   <select
                     name={isCustom ? undefined : "reason"}
                     value={selectedReason}
+                    required
                     onChange={(e) => setSelectedReason(e.target.value)}
                     className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-slate-700 focus:bg-white transition-all"
                   >

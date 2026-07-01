@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { CalendarDays, List, LayoutGrid, Plus } from "lucide-react";
+import { BookAppointment } from "@/components/modals/BookAppointment";
 import AppointmentFilters from "./AppointmentFilters";
 import DayAgendaView from "./DayAgendaView";
 import WeekView from "./WeekView";
@@ -53,48 +54,49 @@ export default function AppointmentsClient({
     router.push(`${pathname}?${params.toString()}`);
   };
 
-  // "New appointment" modal — reuse your existing BookAppointmentExisting modal
+  // New appointment modal is shared with the dashboard booking flow
   const [showBookModal, setShowBookModal] = useState(false);
-  const [prefilledTime, setPrefilledTime] = useState<string | undefined>();
+  const handleBookSlot = () => setShowBookModal(true);
 
-  const handleBookSlot = (time: string) => {
-    setPrefilledTime(time);
-    setShowBookModal(true);
-  };
-
-  // Stats for the summary bar
   const appointments = initialDayData;
-  const scheduled   = appointments.filter((a) => a.status === "SCHEDULED").length;
-  const checkedIn   = appointments.filter((a) => a.status === "CHECKED_IN").length;
-  const completed   = appointments.filter((a) => a.status === "COMPLETED").length;
   const total       = appointments.length;
 
   return (
     <>
-      {/* Top bar: view toggle + new appointment button */}
-      <div className="flex items-center justify-between mb-5 gap-3 flex-wrap">
-        {/* View tabs */}
-        <div className="flex items-center border border-(--border-secondary) rounded-lg overflow-hidden">
-          {VIEW_TABS.map(({ key, label, Icon }) => (
-            <button
-              key={key}
-              onClick={() => switchView(key)}
-              className={`flex items-center gap-1.5 px-3 py-2 text-sm font-medium transition-colors ${
-                initialView === key
-                  ? "bg-(--info-text) text-white"
-                  : "bg-(--bg-primary) text-(--text-secondary) hover:bg-(--bg-secondary)"
-              } ${key !== "day" ? "border-l border-(--border-secondary)" : ""}`}
-            >
-              <Icon size={15} />
-              {label}
-            </button>
-          ))}
+      <div className="space-y-5 flex flex-row">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-(--border-secondary) bg-(--bg-secondary) p-1.5 shadow-sm">
+            {VIEW_TABS.map(({ key, label, Icon }) => (
+              <button
+                key={key}
+                onClick={() => switchView(key)}
+                className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-medium transition-colors ${
+                  initialView === key
+                    ? "bg-(--bg-primary) text-(--text-primary) shadow-sm"
+                    : "text-(--text-secondary) hover:bg-(--bg-primary) hover:text-(--text-primary)"
+                }`}
+              >
+                <Icon size={15} />
+                {label}
+              </button>
+            ))}
+
+            <div className="flex items-center gap-2 text-sm text-(--text-secondary)">
+              <CalendarDays size={16} className="text-(--info-text)" />
+              <span>
+                {initialView === "day"
+                  ? "Day agenda"
+                  : initialView === "week"
+                    ? "Weekly overview"
+                    : "Appointment list"}
+              </span>
+            </div>
+          </div>
         </div>
 
-        {/* New appointment */}
         <button
-          onClick={() => { setPrefilledTime(undefined); setShowBookModal(true); }}
-          className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-(--info-text) text-white rounded-lg hover:opacity-90 transition-opacity"
+          onClick={() => setShowBookModal(true)}
+          className="inline-flex ml-auto items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 h-10 cursor-pointer text-sm font-medium text-white shadow-sm transition hover:bg-(--primary-dark) hover:shadow-md"
         >
           <Plus size={16} />
           New appointment
@@ -103,96 +105,76 @@ export default function AppointmentsClient({
 
       {/* Day summary bar — only in day view */}
       {initialView === "day" && total > 0 && (
-        <div className="grid grid-cols-4 gap-3 mb-5">
-          {[
-            { label: "Total",      value: total,      color: "text-(--text-primary)" },
-            { label: "Scheduled",  value: scheduled,  color: "text-(--info-text)" },
-            { label: "Checked in", value: checkedIn,  color: "text-(--success-text)" },
-            { label: "Completed",  value: completed,  color: "text-(--success-text)" },
-          ].map((stat) => (
-            <div
-              key={stat.label}
-              className="bg-(--bg-secondary) rounded-lg px-4 py-3 border border-(--border-secondary)"
-            >
-              <p className={`text-xl font-bold ${stat.color}`}>{stat.value}</p>
-              <p className="text-xs text-(--text-tertiary) mt-0.5 font-medium uppercase tracking-widest">
-                {stat.label}
-              </p>
+        <div className="grid gap-3 mb-4">
+          <div className="relative overflow-hidden rounded-[22px] border border-(--border-secondary) bg-linear-to-br from-(--primary-light) via-(--bg-primary) to-(--bg-secondary) px-5 py-5 shadow-sm sm:px-6">
+            <div className="absolute  right-0 top-0 h-24 w-24 mt-5 translate-x-8 -translate-y-8 rounded-full bg-(--info-text)/10 blur-2xl" />
+            <div className="relative flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between ">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-(--text-secondary)">
+                  Today&apos;s total appointments
+                </p>
+                <h2 className="mt-2 text-4xl font-semibold text-(--text-primary)">
+                  {total}
+                </h2>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <span className="rounded-full border border-(--border-secondary) bg-(--bg-primary) px-3 py-1 text-xs font-medium text-(--text-secondary)">
+                  Day view
+                </span>
+                <span className="rounded-full bg-(--info-bg) px-3 py-1 text-xs font-medium text-(--info-text)">
+                  Scheduled flow
+                </span>
+              </div>
             </div>
-          ))}
-        </div>
-      )}
-
-      {/* Filters */}
-      <AppointmentFilters
-        currentDate={initialDate}
-        currentStatus={initialStatus}
-        currentSearch={initialSearch}
-        today={today}
-      />
-
-      {/* View content */}
-      {initialView === "day" && (
-        <DayAgendaView
-          appointments={initialDayData}
-          onBookSlot={handleBookSlot}
-        />
-      )}
-
-      {initialView === "week" && (
-        <WeekView
-          appointments={initialDayData}
-          currentDate={initialDate}
-          onDayClick={(date) => {
-            const params = new URLSearchParams(searchParams.toString());
-            params.set("date", date);
-            params.set("view", "day");
-            router.push(`${pathname}?${params.toString()}`);
-          }}
-        />
-      )}
-
-      {initialView === "list" && initialListData && (
-        <AppointmentsListView
-          appointments={initialListData.appointments}
-          total={initialListData.total}
-          totalPages={initialListData.totalPages}
-          page={initialListData.page}
-        />
-      )}
-
-      {/* Book appointment modal — reuse your existing component */}
-      {showBookModal && (
-        // Replace with your actual BookAppointmentExisting modal:
-        // <BookAppointmentExisting
-        //   open={showBookModal}
-        //   onClose={() => setShowBookModal(false)}
-        //   prefilledTime={prefilledTime}
-        //   prefilledDate={initialDate}
-        // />
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-(--bg-primary) border border-(--border-secondary) rounded-xl p-6 w-full max-w-md shadow-xl">
-            <p className="text-sm font-medium text-(--text-primary) mb-4">
-              Book Appointment
-              {prefilledTime && (
-                <span className="ml-2 text-(--text-tertiary)">@ {prefilledTime}</span>
-              )}
-            </p>
-            <p className="text-xs text-(--text-tertiary) mb-4">
-              Replace this placeholder with your{" "}
-              <code className="font-mono bg-(--bg-secondary) px-1 py-0.5 rounded">
-                BookAppointmentExisting
-              </code>{" "}
-              modal.
-            </p>
-            <button
-              onClick={() => setShowBookModal(false)}
-              className="text-xs px-3 py-1.5 border border-(--border-secondary) rounded-md hover:bg-(--bg-secondary)"
-            >
-              Close
-            </button>
           </div>
         </div>
+      )}
+
+      <div className="rounded-2xl border border-(--border-secondary) bg-(--bg-primary) p-4 shadow-sm sm:p-5">
+        <AppointmentFilters
+          currentDate={initialDate}
+          currentStatus={initialStatus}
+          currentSearch={initialSearch}
+          today={today}
+        />
+
+        {/* View content */}
+        {initialView === "day" && (
+          <DayAgendaView
+            appointments={initialDayData}
+            onBookSlot={handleBookSlot}
+          />
+        )}
+
+        {initialView === "week" && (
+          <WeekView
+            appointments={initialDayData}
+            currentDate={initialDate}
+            onDayClick={(date) => {
+              const params = new URLSearchParams(searchParams.toString());
+              params.set("date", date);
+              params.set("view", "day");
+              router.push(`${pathname}?${params.toString()}`);
+            }}
+          />
+        )}
+
+        {initialView === "list" && initialListData && (
+          <AppointmentsListView
+            appointments={initialListData.appointments}
+            total={initialListData.total}
+            totalPages={initialListData.totalPages}
+            page={initialListData.page}
+          />
+        )}
+      </div>
+
+      {showBookModal && (
+        <BookAppointment
+          open={showBookModal}
+          onClose={() => setShowBookModal(false)}
+          onSuccess={() => setShowBookModal(false)}
+        />
       )}
     </>
   );

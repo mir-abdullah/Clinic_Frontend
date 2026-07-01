@@ -122,7 +122,76 @@ ${paymentLines}
 ✨ Thank you for visiting *Mehreen Dental Clinic*.
 We look forward to your next visit! 🦷`;
 
-  const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+
+
+  // const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+  const whatsappUrl = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`;
+
+  window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+};
+
+
+//appointment reminder:
+ export const sendAppointmentReminder = (appointment:Appointment) => {
+  if (!appointment ) {
+    alert("Invalid appointment data.");
+    return;
+  }
+
+  const formatPhoneForWhatsApp = (rawPhone = "") => {
+    let digits = rawPhone.replace(/\D/g, "");
+
+    // Convert Pakistani numbers (03xxxxxxxxx -> 923xxxxxxxxx)
+    if (digits.startsWith("0")) {
+      digits = "92" + digits.slice(1);
+    }
+
+    return digits;
+  };
+
+  const phone = formatPhoneForWhatsApp(appointment.patient.phone);
+
+  if (!phone) {
+    alert("Invalid patient phone number.");
+    return;
+  }
+
+  const formattedDate = new Date(appointment.date).toLocaleDateString(
+    "en-US",
+    {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }
+  );
+
+  const message = `🦷 *MEHREEN DENTAL CLINIC*
+_Appointment Reminder_
+
+Dear *${appointment.patient.name}*,
+
+This is a friendly reminder of your upcoming appointment.
+
+👨‍⚕️ *Doctor:* ${appointment.doctorName || "Dentist"}
+📅 *Date:* ${formattedDate}
+⏰ *Time:* ${appointment.time}
+🦷 *Reason:* ${appointment.reason || "Dental Consultation"}
+
+📍 *Location:*
+Chaudhry Bostan Khan Rd, above Allied Bank, Gulrez Housing Scheme, Rawalpindi, Punjab 46000
+
+🕒 Please arrive *10 minutes early* to complete any necessary formalities.
+
+If you need to reschedule or cancel your appointment, please let us know in advance.
+
+Thank you for choosing *Mehreen Dental Clinic*.
+We look forward to seeing you! 😊`;
+
+  // New WhatsApp URL
+  const whatsappUrl = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(
+    message
+  )}`;
 
   window.open(whatsappUrl, "_blank", "noopener,noreferrer");
 };

@@ -1,7 +1,7 @@
 // app/appointments/page.tsx  — Server Component
 import { appointmentAPI } from "@/utils/api";
 import type { AppointmentWithPatient, PaginatedAppointments } from "@/utils/type";
-import AppointmentsClient from "../../components/appointments/AppointmentsClient";
+import AppointmentsClient from "@/components/appointments/AppointmentsClient";
 import { format } from "date-fns";
 
 interface PageProps {
@@ -48,15 +48,28 @@ export default async function AppointmentsPage({ searchParams }: PageProps) {
   ]);
 
   return (
-    <div className="min-h-screen bg-(--bg-primary)">
-      <div className="max-w-5xl mx-auto px-4 py-8">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-(--text-primary)">Appointments</h1>
-          <p className="text-sm text-(--text-secondary) mt-1">
-            Manage and track clinic appointments
-          </p>
+    <div className="space-y-6">
+      <div className="rounded-[24px] border border-border bg-(--bg-primary) p-5 shadow-sm sm:p-6 lg:p-8">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-2xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-(--text-secondary)">
+              Scheduling
+            </p>
+            <h1 className="mt-2 text-3xl font-semibold text-(--text-primary)">
+              Appointments
+            </h1>
+            <p className="mt-2 text-sm leading-6 text-(--text-secondary)">
+              Manage the clinic calendar, review the day at a glance, and keep follow-ups organized in one place.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-(--border-secondary) bg-(--bg-secondary) px-4 py-3 text-sm text-(--text-secondary) shadow-sm">
+            <p className="font-medium text-(--text-primary)">Today</p>
+            <p className="mt-1">{format(new Date(), "EEEE, MMMM d, yyyy")}</p>
+          </div>
         </div>
+      </div>
 
+      <section className="rounded-[24px] border border-border bg-(--bg-primary) p-4 shadow-sm sm:p-6">
         <AppointmentsClient
           initialDayData={dayRes}
           initialListData={listRes}
@@ -66,7 +79,7 @@ export default async function AppointmentsPage({ searchParams }: PageProps) {
           initialSearch={search}
           today={today}
         />
-      </div>
+      </section>
     </div>
   );
 }

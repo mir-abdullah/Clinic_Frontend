@@ -97,13 +97,13 @@ export default function AppointmentFilters({
   };
 
   return (
-    <div className="space-y-3 mb-6">
+    <div className="space-y-4">
       {/* Row 1: Date nav + quick date chips */}
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-(--border-secondary) bg-(--bg-secondary) p-3">
         {/* Prev/Next arrows */}
         <button
           onClick={() => push({ date: prevDate })}
-          className="p-1.5 rounded-md border border-(--border-secondary) hover:bg-(--bg-secondary) transition-colors"
+          className="p-1.5 rounded-md border border-(--border-secondary) bg-(--bg-primary) hover:bg-(--bg-secondary) transition-colors"
           aria-label="Previous day"
         >
           <ChevronLeft size={16} className="text-(--text-secondary)" />
@@ -111,7 +111,7 @@ export default function AppointmentFilters({
 
         <button
           onClick={() => push({ date: nextDate })}
-          className="p-1.5 rounded-md border border-(--border-secondary) hover:bg-(--bg-secondary) transition-colors"
+          className="p-1.5 rounded-md border border-(--border-secondary) bg-(--bg-primary) hover:bg-(--bg-secondary) transition-colors"
           aria-label="Next day"
         >
           <ChevronRight size={16} className="text-(--text-secondary)" />
@@ -136,8 +136,8 @@ export default function AppointmentFilters({
             onClick={() => push({ date: chip.date })}
             className={`text-xs px-3 py-1.5 rounded-md font-medium transition-colors ${
               currentDate === chip.date
-                ? "bg-(--info-text) text-white"
-                : "bg-(--bg-secondary) text-(--text-secondary) hover:bg-(--border-secondary)"
+                ? "bg-(--info-text) text-white shadow-sm"
+                : "bg-(--bg-primary) text-(--text-secondary) hover:bg-(--border-secondary)"
             }`}
           >
             {chip.label}
@@ -146,9 +146,9 @@ export default function AppointmentFilters({
       </div>
 
       {/* Row 2: Search + status chips */}
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-(--border-secondary) bg-(--bg-primary) p-3 shadow-sm">
         {/* Search */}
-        <div className="relative min-w-[200px]">
+        <div className="relative" style={{ minWidth: 200 }}>
           <Search
             size={14}
             className="absolute left-2.5 top-1/2 -translate-y-1/2 text-(--text-tertiary)"
@@ -158,7 +158,7 @@ export default function AppointmentFilters({
             placeholder="Patient name or phone…"
             defaultValue={currentSearch}
             onChange={handleSearch}
-            className="pl-8 pr-3 py-1.5 text-sm w-full rounded-md border border-(--border-secondary) bg-(--bg-secondary) text-(--text-primary) placeholder:text-(--text-tertiary) focus:outline-none focus:ring-1 focus:ring-(--info-text)"
+            className="pl-8 pr-3 py-2 text-sm w-full rounded-md border border-(--border-secondary) bg-(--bg-secondary) text-(--text-primary) placeholder:text-(--text-tertiary) focus:outline-none focus:ring-1 focus:ring-(--info-text)"
           />
         </div>
 
@@ -172,7 +172,7 @@ export default function AppointmentFilters({
               onClick={() => toggleStatus(chip.value)}
               className={`text-xs px-3 py-1.5 rounded-md font-medium transition-colors ${
                 isStatusActive(chip.value)
-                  ? "bg-(--info-text) text-white"
+                  ? "bg-(--info-text) text-white shadow-sm"
                   : "bg-(--bg-secondary) text-(--text-secondary) hover:bg-(--border-secondary)"
               }`}
             >
