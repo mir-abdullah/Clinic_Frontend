@@ -42,35 +42,40 @@ export default function WeekView({ appointments, currentDate, onDayClick }: Prop
       {weekDays.map(({ date, label, day }) => {
         const dayAppts = byDate.get(date) ?? [];
         const isToday = date === today;
-        const isSelected = date === currentDate;
 
         return (
           <div
             key={date}
-            className={`bg-(--bg-primary) ${isSelected ? "ring-2 ring-inset ring-(--info-text)/20" : ""}`}
+            className={`bg-(--bg-primary) ${isToday ? "ring-2 ring-inset ring-(--info-text)/20" : ""}`}
             style={{ minHeight: 220 }}
           >
             {/* Day header */}
             <button
               onClick={() => onDayClick?.(date)}
               className={`w-full px-2 py-3 text-center border-b border-(--border-secondary) transition-colors ${
-                isSelected ? "bg-(--primary-light)" : "hover:bg-(--bg-secondary)"
+                isToday ? "bg-(--primary-light)" : "hover:bg-(--bg-secondary)"
               }`}
             >
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-(--text-tertiary)">
-                {label}
-              </p>
-              <p
-                className={`text-sm font-bold mt-0.5 w-7 h-7 flex items-center justify-center mx-auto rounded-full ${
-                  isToday
-                    ? "bg-primary text-white shadow-sm"
-                    : isSelected
-                      ? "bg-(--info-bg) text-(--info-text)"
-                      : "text-(--text-primary)"
-                }`}
-              >
-                {day}
-              </p>
+              <div className="flex items-start justify-between gap-2">
+                <div className="text-left">
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-(--text-tertiary)">
+                    {label}
+                  </p>
+                  <p
+                    className={`mt-0.5 flex h-7 w-7 items-center justify-center rounded-full text-sm font-bold ${
+                      isToday
+                        ? "bg-primary text-white shadow-sm"
+                        : "text-(--text-primary)"
+                    }`}
+                  >
+                    {day}
+                  </p>
+                </div>
+
+                <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-(--info-bg) px-2 text-[11px] font-semibold text-(--info-text)">
+                  {dayAppts.length}
+                </span>
+              </div>
             </button>
 
             {/* Appointments for this day */}

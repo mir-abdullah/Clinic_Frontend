@@ -15,6 +15,7 @@ type View = "day" | "week" | "list";
 
 interface Props {
   initialDayData: AppointmentWithPatient[];
+  initialWeekData: AppointmentWithPatient[];
   initialListData: {
     appointments: AppointmentWithPatient[];
     total: number;
@@ -36,6 +37,7 @@ const VIEW_TABS: { key: View; label: string; Icon: React.ElementType }[] = [
 
 export default function AppointmentsClient({
   initialDayData,
+  initialWeekData,
   initialListData,
   initialDate,
   initialView,
@@ -148,7 +150,7 @@ export default function AppointmentsClient({
 
         {initialView === "week" && (
           <WeekView
-            appointments={initialDayData}
+            appointments={initialWeekData}
             currentDate={initialDate}
             onDayClick={(date) => {
               const params = new URLSearchParams(searchParams.toString());

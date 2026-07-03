@@ -16,15 +16,15 @@ const STATUS_CHIPS: { value: AppointmentStatus | "ALL"; label: string }[] = [
   { value: "ALL",        label: "All" },
   { value: "SCHEDULED",  label: "Scheduled" },
   { value: "CHECKED_IN", label: "Checked in" },
-  { value: "IN_PROGRESS",label: "In progress" },
-  { value: "COMPLETED",  label: "Completed" },
+  // { value: "IN_PROGRESS",label: "In progress" },
+  // { value: "COMPLETED",  label: "Completed" },
   { value: "CANCELLED",  label: "Cancelled" },
   { value: "NO_SHOW",    label: "No show" },
 ];
 
 interface Props {
   currentDate: string;   // "yyyy-MM-dd"
-  currentStatus: string; // comma-separated or ""
+  currentStatus: string; // selected status or ""
   currentSearch: string;
   today: string;
 }
@@ -67,25 +67,23 @@ export default function AppointmentFilters({
     return format(parsed, "EEE, MMM d, yyyy");
   };
 
-  // ── Status toggle (multi-select) ────────────────────────────────────────
-  const activeStatuses = currentStatus
-    ? currentStatus.split(",").filter(Boolean)
-    : [];
+  // ── Status toggle (single-select) ───────────────────────────────────────
+  const activeStatus = currentStatus || "";
 
   const toggleStatus = (value: string) => {
     if (value === "ALL") {
       push({ status: "", page: "" });
       return;
     }
-    const next = activeStatuses.includes(value)
-      ? activeStatuses.filter((s) => s !== value)
-      : [...activeStatuses, value];
-    push({ status: next.join(","), page: "" });
+    push({
+      status: activeStatus === value ? "" : value,
+      page: "",
+    });
   };
 
   const isStatusActive = (value: string) => {
-    if (value === "ALL") return activeStatuses.length === 0;
-    return activeStatuses.includes(value);
+    if (value === "ALL") return activeStatus === "";
+    return activeStatus === value;
   };
 
   // ── Search debounce ─────────────────────────────────────────────────────

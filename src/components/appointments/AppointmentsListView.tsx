@@ -54,7 +54,7 @@ export default function AppointmentsListView({
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-(--bg-secondary) border-b border-(--border-secondary)">
-              {["Patient", "Date & Time", "Reason", "Status", ""].map((h) => (
+              {["#","Patient", "Date & Time", "Reason", "Status", ""].map((h) => (
                 <th
                   key={h}
                   className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-widest text-(--text-tertiary)"
@@ -65,11 +65,13 @@ export default function AppointmentsListView({
             </tr>
           </thead>
           <tbody className="divide-y divide-(--border-tertiary)">
-            {appointments.map((appt) => (
+            {appointments.map((appt, index) => (
               <tr
                 key={appt.id}
                 className="hover:bg-(--bg-secondary) transition-colors"
               >
+                <td className="px-4 py-3 text-(--text-tertiary)">{index + 1}</td>
+
                 <td className="px-4 py-3">
                   <p className="font-medium text-(--text-primary)">
                     {appt.patient.name}
@@ -82,7 +84,7 @@ export default function AppointmentsListView({
                   <p>{format(new Date(appt.date), "MMM d, yyyy")}</p>
                   <p className="text-xs text-(--text-tertiary)">{appt.time}</p>
                 </td>
-                <td className="px-4 py-3 text-(--text-secondary) max-w-[180px] truncate">
+                <td className="px-4 py-3 text-(--text-secondary) max-w-45 truncate">
                   {appt.reason ?? "—"}
                 </td>
                 <td className="px-4 py-3">
@@ -111,7 +113,7 @@ export default function AppointmentsListView({
             <button
               onClick={() => goToPage(page - 1)}
               disabled={page <= 1}
-              className="px-3 py-1.5 text-xs rounded-md border border-(--border-secondary) disabled:opacity-40 hover:bg-(--bg-secondary) transition-colors"
+              className="px-3 py-1.5 text-xs cursor-pointer rounded-md border border-(--border-secondary) disabled:opacity-40 hover:bg-(--bg-secondary) transition-colors"
             >
               Previous
             </button>
@@ -121,7 +123,7 @@ export default function AppointmentsListView({
                 <button
                   key={p}
                   onClick={() => goToPage(p)}
-                  className={`px-3 py-1.5 text-xs rounded-md border transition-colors ${
+                  className={`px-3 cursor-pointer py-1.5 text-xs rounded-md border transition-colors ${
                     page === p
                       ? "border-(--info-text) bg-(--info-text) text-white"
                       : "border-(--border-secondary) hover:bg-(--bg-secondary)"
@@ -134,7 +136,7 @@ export default function AppointmentsListView({
             <button
               onClick={() => goToPage(page + 1)}
               disabled={page >= totalPages}
-              className="px-3 py-1.5 text-xs rounded-md border border-(--border-secondary) disabled:opacity-40 hover:bg-(--bg-secondary) transition-colors"
+              className="px-3 py-1.5 text-xs cursor-pointer rounded-md border border-(--border-secondary) disabled:opacity-40 hover:bg-(--bg-secondary) transition-colors"
             >
               Next
             </button>

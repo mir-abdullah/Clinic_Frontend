@@ -2,7 +2,7 @@
 import { appointmentAPI } from "@/utils/api";
 import type { AppointmentWithPatient, PaginatedAppointments } from "@/utils/type";
 import AppointmentsClient from "@/components/appointments/AppointmentsClient";
-import { format } from "date-fns";
+import { addDays, format, parseISO, startOfWeek } from "date-fns";
 
 interface PageProps {
   searchParams: Promise<{
@@ -30,18 +30,35 @@ export default async function AppointmentsPage({ searchParams }: PageProps) {
 
   // Build query params for the backend
   const dayParams = { date, ...(status && { status }), ...(search && { search }) };
-  const listParams = { page, pageSize: 15, ...(status && { status }), ...(search && { search }) };
+  const listParams = { page, pageSize: 10, ...(status && { status }), ...(search && { search }) };
+  const weekBase = startOfWeek(parseISO(date), { weekStartsOn: 1 });
+  const weekDates = Array.from({ length: 7 }, (_, index) =>
+    format(addDays(weekBase, index), "yyyy-MM-dd")
+  );
 
   // Fetch server-side — parallel where possible
-  const [dayRes, listRes] = await Promise.all([
+  const [dayRes, weekRes, listRes] = await Promise.all([
     view !== "list"
       ? appointmentAPI.get<AppointmentWithPatient[]>("/all", { params: dayParams })
           .then((r) => r.data)
           .catch(() => [] as AppointmentWithPatient[])
       : Promise.resolve([] as AppointmentWithPatient[]),
 
+    view === "week"
+      ? Promise.all(
+          weekDates.map((weekDate) =>
+            appointmentAPI
+              .get<AppointmentWithPatient[]>("/all", {
+                params: { date: weekDate, ...(status && { status }), ...(search && { search }) },
+              })
+              .then((r) => r.data)
+              .catch(() => [] as AppointmentWithPatient[])
+          )
+        ).then((results) => results.flat())
+      : Promise.resolve([] as AppointmentWithPatient[]),
+
     view === "list"
-      ? appointmentAPI.get<PaginatedAppointments>("/paginated", { params: listParams })
+      ? appointmentAPI.get<PaginatedAppointments>("/all", { params: listParams })
           .then((r) => r.data)
           .catch(() => null)
       : Promise.resolve(null),
@@ -72,6 +89,7 @@ export default async function AppointmentsPage({ searchParams }: PageProps) {
       <section className="rounded-[24px] border border-border bg-(--bg-primary) p-4 shadow-sm sm:p-6">
         <AppointmentsClient
           initialDayData={dayRes}
+          initialWeekData={weekRes}
           initialListData={listRes}
           initialDate={date}
           initialView={view}

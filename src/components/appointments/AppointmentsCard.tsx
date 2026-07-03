@@ -23,11 +23,11 @@ import {sendAppointmentReminder} from "@/utils/helpers";
 
 const NEXT_STATUSES: Partial<Record<AppointmentStatus, AppointmentStatus[]>> = {
   SCHEDULED:   ["CHECKED_IN", "CANCELLED", "NO_SHOW"],
-  CHECKED_IN:  ["IN_PROGRESS", "CANCELLED", "NO_SHOW"],
-  IN_PROGRESS: ["COMPLETED"],
-  COMPLETED:   [],
-  CANCELLED:   [],
-  NO_SHOW:     [],
+  // CHECKED_IN:  ["IN_PROGRESS", "CANCELLED", "NO_SHOW"],
+  // IN_PROGRESS: ["COMPLETED"],
+  // COMPLETED:   [],
+  // CANCELLED:   [],
+  // NO_SHOW:     [],
 };
 
 interface Props {
@@ -91,7 +91,7 @@ return (
   <div
     className={`group relative rounded-2xl border border-(--border-secondary) shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md ${
       isCancelledOrDone ? "opacity-60" : ""
-    } ${isPending ? "opacity-50 pointer-events-none" : ""}`}
+    } ${isPending ? "opacity-50 pointer-events-none" : ""} ${showActions ? "z-30" : "z-0"}`}
   >
     {/* background gradient + left status strip, clipped to rounded corners */}
     <div className={`absolute inset-0 overflow-hidden rounded-2xl bg-linear-to-r ${toneClass}`}>
@@ -188,7 +188,7 @@ return (
 
                 {showActions && (
                   <div
-                    className="absolute right-0 top-full z-20 mt-2 rounded-2xl border border-(--border-secondary) bg-(--bg-primary) shadow-xl"
+                    className="absolute right-0 top-full z-40 mt-2 overflow-visible rounded-2xl border border-(--border-secondary) bg-(--bg-primary) shadow-xl"
                     style={{ minWidth: 140 }}
                   >
                     {nextStatuses.map((s) => (
