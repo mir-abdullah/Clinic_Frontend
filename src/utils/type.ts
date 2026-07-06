@@ -69,9 +69,11 @@ export type Visit = {
   paidAmount: number;
   dueAmount: number;
   paymentStatus: "PAID" | "PENDING" | "PARTIAL";
+  paymentMethod?: "CASH" | "CARD" | "ONLINE" | "BANK";
   createdAt: string;
   updatedAt: string;
   patient?: Patient
+  payments?: Payment[];
 };
 
 export type Action={

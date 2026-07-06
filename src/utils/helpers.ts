@@ -64,7 +64,7 @@ export const sendReceipt = (visit: Visit) => {
     return;
   }
 
-  const formatPhoneForWhatsApp = (rawPhone: string | undefined) => {
+  const formatPhoneForWhatsApp = (rawPhone: string | null | undefined) => {
     let digits = (rawPhone || "").replace(/\D/g, "");
     if (digits.startsWith("0")) {
       digits = "92" + digits.slice(1);
@@ -131,15 +131,26 @@ We look forward to your next visit! 🦷`;
 };
 
 
+type AppointmentReminderPayload = {
+  date: string;
+  time: string;
+  doctorName?: string | null;
+  reason?: string | null;
+  patient: {
+    name: string;
+    phone?: string | null;
+  };
+};
+
 //appointment reminder:
- export const sendAppointmentReminder = (appointment:Appointment) => {
+ export const sendAppointmentReminder = (appointment: AppointmentReminderPayload) => {
   if (!appointment ) {
     alert("Invalid appointment data.");
     return;
   }
 
-  const formatPhoneForWhatsApp = (rawPhone = "") => {
-    let digits = rawPhone.replace(/\D/g, "");
+  const formatPhoneForWhatsApp = (rawPhone: string | null | undefined = "") => {
+    let digits = (rawPhone || "").replace(/\D/g, "");
 
     // Convert Pakistani numbers (03xxxxxxxxx -> 923xxxxxxxxx)
     if (digits.startsWith("0")) {

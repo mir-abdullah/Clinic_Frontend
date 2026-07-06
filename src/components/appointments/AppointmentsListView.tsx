@@ -4,6 +4,7 @@
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { format } from "date-fns";
 import AppointmentStatusBadge from "./AppointmentStatusBadge";
+import {sendAppointmentReminder} from "@/utils/helpers";
 import type { AppointmentWithPatient } from "@/utils/type";
 
 interface Props {
@@ -11,6 +12,7 @@ interface Props {
   total: number;
   totalPages: number;
   page: number;
+  onEditAppointment?: (appointment: AppointmentWithPatient) => void;
 }
 
 export default function AppointmentsListView({
@@ -18,6 +20,7 @@ export default function AppointmentsListView({
   total,
   totalPages,
   page,
+  onEditAppointment,
 }: Props) {
   const router = useRouter();
   const pathname = usePathname();
@@ -54,7 +57,7 @@ export default function AppointmentsListView({
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-(--bg-secondary) border-b border-(--border-secondary)">
-              {["#","Patient", "Date & Time", "Reason", "Status", ""].map((h) => (
+              {["#", "Patient", "Date & Time", "Reason", "Status", "Actions"].map((h) => (
                 <th
                   key={h}
                   className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-widest text-(--text-tertiary)"
@@ -74,28 +77,44 @@ export default function AppointmentsListView({
 
                 <td className="px-4 py-3">
                   <p className="font-medium text-(--text-primary)">
-                    {appt.patient.name}
+                    {appt?.patient?.name}
                   </p>
                   <p className="text-xs text-(--text-tertiary)">
-                    {appt.patient.phone}
+                  {appt?.patient?.phone}
                   </p>
                 </td>
                 <td className="px-4 py-3 text-(--text-secondary)">
                   <p>{format(new Date(appt.date), "MMM d, yyyy")}</p>
-                  <p className="text-xs text-(--text-tertiary)">{appt.time}</p>
+                  <p className="text-xs text-(--text-tertiary)">{appt?.time}</p>
                 </td>
                 <td className="px-4 py-3 text-(--text-secondary) max-w-45 truncate">
-                  {appt.reason ?? "—"}
+                  {appt?.reason ?? "—"}
                 </td>
                 <td className="px-4 py-3">
-                  <AppointmentStatusBadge status={appt.status} />
+                  <AppointmentStatusBadge status={appt?.status} />
                 </td>
-                <td className="px-4 py-3 text-right">
-                  {appt.reminderSent && (
-                    <span className="text-xs text-(--text-tertiary)">
-                      Reminded ✓
-                    </span>
-                  )}
+                <td className="px-4 py-3">
+                  <div className="flex items-center  gap-2">
+                    {appt?.reminderSent && (
+                      <span className="text-xs text-(--text-tertiary)">
+                        Reminded ✓
+                      </span>
+                    )}
+                    <button type="button" onClick={()=>sendAppointmentReminder(appt)} name="send Reminder" className="flex cursor-pointer items-center gap-1 rounded-md border border-(--border-secondary) px-3 py-1.5 text-xs font-medium text-(--text-secondary) transition-colors hover:bg-(--bg-secondary) hover:text-blue-500">
+                     Reminder
+                    </button>
+                    
+
+                    {onEditAppointment && (
+                      <button
+                        type="button"
+                        onClick={() => onEditAppointment(appt)}
+                        className="flex items-center gap-1 rounded-md cursor-pointer border border-(--border-secondary) px-3 py-1.5 text-xs font-medium text-(--text-secondary) transition-colors hover:bg-(--bg-secondary) hover:text-(--text-primary)"
+                      >
+                        Edit
+                      </button>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}

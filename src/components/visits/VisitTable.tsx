@@ -12,6 +12,7 @@ import { Card, CardContent } from "../ui/card";
 import VisitActions from "./VisitActions";
 
 export const VisitTable = ({ visitsList }: { visitsList: Visit[] }) => {
+
   return (
     <Card className="rounded-2xl border border-gray-200 bg-white shadow-sm">
       <CardContent className="p-6">
@@ -53,10 +54,15 @@ export const VisitTable = ({ visitsList }: { visitsList: Visit[] }) => {
           </TableHeader>
 
           <TableBody>
-            {visitsList.map((visit, index) => (
-              <TableRow
-                key={visit.id}
-                className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
+            {visitsList.map((visit, index) => {
+              const totalCollected = visit.payments?.reduce((sum, payment) => sum + payment.amount, 0) || 0;
+              const dueAmount = visit.totalAmount - totalCollected;
+              const paymentStatus = dueAmount === 0 ? "PAID" : (totalCollected > 0 ? "PARTIAL" : "PENDING");
+
+              return (
+                <TableRow
+                  key={visit.id}
+                  className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
               >
                 <TableCell className="py-5 font-medium text-gray-700">
                   {index + 1}
@@ -83,30 +89,30 @@ export const VisitTable = ({ visitsList }: { visitsList: Visit[] }) => {
                 </TableCell>
 
                 <TableCell className="py-5 text-gray-700">
-                  Rs{visit.paidAmount.toLocaleString()}
+                  Rs{totalCollected.toLocaleString()}
                 </TableCell>
 
                 <TableCell
                   className={`py-5 font-semibold ${
-                    visit.dueAmount > 0
+                    dueAmount > 0
                       ? "text-amber-500"
                       : "text-green-500"
                   }`}
                 >
-                  Rs{visit.dueAmount.toLocaleString()}
+                  Rs{dueAmount.toLocaleString()}
                 </TableCell>
 
                 <TableCell className="py-5">
                   <span
                     className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${
-                      visit.paymentStatus === "PAID"
+                      paymentStatus === "PAID"
                         ? "bg-green-100 text-green-600"
-                        : visit.paymentStatus === "PARTIAL"
+                        : paymentStatus === "PARTIAL"
                         ? "bg-yellow-100 text-yellow-600"
                         : "bg-red-100 text-red-600"
                     }`}
                   >
-                    {visit.paymentStatus}
+                    {paymentStatus}
                   </span>
                 </TableCell>
 
@@ -116,7 +122,8 @@ export const VisitTable = ({ visitsList }: { visitsList: Visit[] }) => {
                   </div>
                 </TableCell>
               </TableRow>
-            ))}
+
+            )})}
           </TableBody>
         </Table>
       </CardContent>

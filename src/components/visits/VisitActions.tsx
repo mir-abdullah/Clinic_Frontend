@@ -4,12 +4,19 @@ import { Visit} from "@/utils/type";
 import { useState } from 'react';
 import { toast } from "sonner";
 import { RecordPaymentModal } from "@/components/modals/RecordPayment";
+import { AddVisitModal } from "@/components/modals/AddVisit";
 import { ViewVisitModal } from '../modals/ViewVisitDetails';
 import { sendReceipt } from '@/utils/helpers';
+import { useRouter } from 'next/navigation';
 
 const VisitActions = ({ visit }: { visit: Visit }) => {
       const [recordPaymentOpen, setRecordPaymentOpen] = useState(false);
       const [viewVisitOpen, setViewVisitOpen] = useState(false);
+  const [editVisitOpen, setEditVisitOpen] = useState(false);
+  const router = useRouter();
+
+  const totalCollected = visit.payments?.reduce((sum, payment) => sum + payment.amount, 0) || 0;
+  const isPaid = totalCollected >= visit.totalAmount;
   
 
   return (
@@ -21,7 +28,14 @@ const VisitActions = ({ visit }: { visit: Visit }) => {
         >
           👁️
         </button>
-        {visit.paymentStatus !== "PAID" && (
+        <button
+          className="h-8 w-8 rounded-md border border-border bg-(--bg-primary) hover:bg-blue-100 transition cursor-pointer"
+          title="Edit Visit"
+          onClick={() => setEditVisitOpen(true)}
+        >
+          ✏️
+        </button>
+        {isPaid === false && (
           <button
             className="h-8 w-8 rounded-md border border-border bg-(--bg-primary) hover:bg-green-100 transition cursor-pointer"
             title="Add Payment"
@@ -56,6 +70,21 @@ const VisitActions = ({ visit }: { visit: Visit }) => {
               visit={visit}
               onClose={() => setViewVisitOpen(false)}
               open={viewVisitOpen}
+            />
+          )
+        }
+        {
+          editVisitOpen && (
+            <AddVisitModal
+              key={visit.id}
+              open={editVisitOpen}
+              visit={visit}
+              onClose={() => setEditVisitOpen(false)}
+              onSuccess={() => {
+                toast.success("Visit updated successfully");
+                setEditVisitOpen(false);
+                router.refresh();
+              }}
             />
           )
         }

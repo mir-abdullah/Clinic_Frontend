@@ -18,7 +18,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { patientAPI, appointmentAPI, visitAPI } from "@/utils/api";
+import {  appointmentAPI, visitAPI } from "@/utils/api";
 import { Patient, Visit, Appointment } from "@/utils/type";
 import { AddPatient } from "./AddPatient";
 import { toast } from "sonner";
@@ -266,12 +266,10 @@ export const ViewPatientModal = ({
                         <col className="w-[20%]" />
                         <col className="w-[15%]" />
                         <col className="w-[15%]" />
-                                                <col className="w-[15%]" />
-
                       </colgroup>
                       <thead>
                         <tr className="bg-slate-50 border-b border-slate-200">
-                          {["Date", "Reason", "Doctor", "Total", "Paid ", "Actions"].map((h, i) => (
+                          {["Date", "Reason", "Doctor", "Total", "Paid "].map((h, i) => (
                             <th
                               key={h}
                               className={`py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-400 ${
@@ -303,17 +301,6 @@ export const ViewPatientModal = ({
                                   {visit.paidAmount.toLocaleString()}
                                 </span>
                               </td>
-                              <td className="px-4 py-3.5 text-right">
-                                <button
-                                  title="Send Receipt"
-                                  type="button"
-                                  onClick={() => sendReceipt(visit)}
-                                  className="text-blue-600 hover:text-blue-800 transition-colors cursor-pointer"
-                                >
-                                  📤
-                                </button>
-                              </td>
-
                             </tr>
                           );
                         })}

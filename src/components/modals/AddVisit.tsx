@@ -1,8 +1,8 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
-import { addVisit } from "@/actions/visits";
-import { actionState } from "@/utils/type";
+import { useActionState, useEffect, useState, type ChangeEvent } from "react";
+import { addVisit, editVisit } from "@/actions/visits";
+import type { Visit, actionState } from "@/utils/type";
 import { X, Stethoscope, Receipt } from "lucide-react";
 import { visitReasons } from "@/utils/data";
 
@@ -14,29 +14,72 @@ const initialState: actionState = {
 const getCurrentDate = () => new Date().toISOString().split("T")[0];
 const getCurrentTime = () => new Date().toTimeString().slice(0, 5);
 
+const OTHER_REASON_VALUE = "Other||Not Listed";
+const CUSTOM_REASON_VALUE = "Other||Custom Reason";
+
+const getReasonValue = (reason?: string | null) => {
+  if (!reason) return "";
+
+  for (const group of visitReasons) {
+    for (const item of group.reasons) {
+      if (`${group.category} - ${item}` === reason) {
+        return `${group.category}||${item}`;
+      }
+    }
+  }
+
+  return CUSTOM_REASON_VALUE;
+};
+
 export const AddVisitModal = ({
   open = true,
   onClose = () => {},
   onSuccess = () => {},
   patientId,
+  visit = null,
 }: {
   open?: boolean;
   onClose?: () => void;
   onSuccess?: (message: string) => void;
-  patientId: string;
+  patientId?: string;
+  visit?: Visit | null;
 }) => {
-  const addVisitWithPatient = addVisit.bind(null, patientId);
-  const [state, formAction, pending] = useActionState(
-    addVisitWithPatient,
-    initialState,
-  );
-  const [totalAmount, setTotalAmount] = useState<number>(0);
-  const [paidAmount, setPaidAmount] = useState<number>(0);
-  const [selectedReason, setSelectedReason] = useState<string>("");
-  const [customReason, setCustomReason] = useState<string>("");
+  const isEditing = Boolean(visit);
+  const addVisitWithPatient = patientId ? addVisit.bind(null, patientId) : null;
+  const editVisitWithId = visit ? editVisit.bind(null, visit.id) : null;
+
+  const submitAction = async (prevState: actionState, formData: FormData) => {
+    if (isEditing && editVisitWithId) {
+      return editVisitWithId(prevState, formData);
+    }
+
+    if (!isEditing && addVisitWithPatient) {
+      return addVisitWithPatient(prevState, formData);
+    }
+
+    return {
+      status: "error" as const,
+      message: "Missing visit context.",
+    };
+  };
+
+  const [state, formAction, pending] = useActionState(submitAction, initialState);
+  const [totalAmount, setTotalAmount] = useState<number>(visit?.totalAmount ?? 0);
+  const [paidAmount, setPaidAmount] = useState<number>(visit?.paidAmount ?? 0);
+  const [selectedReason, setSelectedReason] = useState<string>(getReasonValue(visit?.reason));
+  const [customReason, setCustomReason] = useState<string>(() => {
+    const reason = visit?.reason ?? "";
+    return getReasonValue(reason) === CUSTOM_REASON_VALUE
+      ? reason.split(" - ").slice(1).join(" - ")
+      : "";
+  });
+  const [date, setDate] = useState<string>(visit?.date?.slice(0, 10) ?? getCurrentDate());
+  const [time, setTime] = useState<string>(visit?.time ?? getCurrentTime());
+  const [doctorName, setDoctorName] = useState<string>(visit?.doctorName ?? "Dr. Maryam");
+  const [paymentMethod, setPaymentMethod] = useState<string>(visit?.paymentMethod ?? "CASH");
+
   const isCustomReason =
-    selectedReason === "Other||Not Listed" ||
-    selectedReason === "Other||Custom Reason";
+    selectedReason === OTHER_REASON_VALUE || selectedReason === CUSTOM_REASON_VALUE;
 
   const finalReason = (() => {
     if (!selectedReason) return "";
@@ -65,11 +108,14 @@ export const AddVisitModal = ({
 
   useEffect(() => {
     if (!open) return;
+
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
+
     document.addEventListener("keydown", handleEsc);
     document.body.style.overflow = "hidden";
+
     return () => {
       document.removeEventListener("keydown", handleEsc);
       document.body.style.overflow = "auto";
@@ -91,12 +137,11 @@ export const AddVisitModal = ({
         className="w-full max-w-3xl rounded-xl bg-(--bg-secondary) shadow-xl overflow-hidden max-h-[90vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-(--bg-primary) shrink-0">
           <div className="flex items-center gap-2">
             <Stethoscope size={18} className="text-(--text-primary)" />
             <h2 className="text-base font-semibold text-(--text-primary)">
-              Add Visit
+              {isEditing ? "Edit Visit" : "Add Visit"}
             </h2>
           </div>
           <button
@@ -108,13 +153,9 @@ export const AddVisitModal = ({
           </button>
         </div>
 
-        <form
-          action={formAction}
-          className="flex flex-col flex-1 overflow-hidden"
-        >
+        <form action={formAction} className="flex flex-col flex-1 overflow-hidden">
           <div className="px-6 py-5 overflow-y-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-start">
-              {/* LEFT COLUMN — Visit Details */}
               <div className="rounded-xl border border-border bg-(--bg-primary) p-5 space-y-4">
                 <p className="text-xs font-semibold uppercase tracking-widest text-(--text-secondary)">
                   Visit Details
@@ -128,11 +169,13 @@ export const AddVisitModal = ({
                     <input
                       type="date"
                       name="date"
-                      defaultValue={getCurrentDate()}
+                      value={date}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) => setDate(e.target.value)}
                       className={inputClass}
                       required
                     />
                   </div>
+
                   <div className="flex flex-col gap-1.5">
                     <label className={`${labelClass} block`}>
                       Time <span className="text-red-500">*</span>
@@ -140,7 +183,8 @@ export const AddVisitModal = ({
                     <input
                       type="time"
                       name="time"
-                      defaultValue={getCurrentTime()}
+                      value={time}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) => setTime(e.target.value)}
                       className={inputClass}
                       required
                     />
@@ -153,9 +197,9 @@ export const AddVisitModal = ({
                     name="doctorName"
                     required
                     className={inputClass}
-                    defaultValue={"Dr. Maryam"}
+                    value={doctorName}
+                    onChange={(e: ChangeEvent<HTMLSelectElement>) => setDoctorName(e.target.value)}
                   >
-                    <option value="">Select Doctor</option>
                     <option value="Dr. Maryam">Dr. Maryam</option>
                     <option value="Dr. Zahid">Dr. Zahid</option>
                   </select>
@@ -167,9 +211,14 @@ export const AddVisitModal = ({
                   </label>
                   <select
                     value={selectedReason}
-                    onChange={(e) => {
+                    onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                       setSelectedReason(e.target.value);
-                      setCustomReason("");
+                      if (
+                        e.target.value !== CUSTOM_REASON_VALUE &&
+                        e.target.value !== OTHER_REASON_VALUE
+                      ) {
+                        setCustomReason("");
+                      }
                     }}
                     className={inputClass}
                     required
@@ -193,7 +242,7 @@ export const AddVisitModal = ({
                     <input
                       type="text"
                       value={customReason}
-                      onChange={(e) => setCustomReason(e.target.value)}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) => setCustomReason(e.target.value)}
                       placeholder="Enter custom reason"
                       className={`${inputClass} mt-1`}
                       required
@@ -234,7 +283,6 @@ export const AddVisitModal = ({
                 </div>
               </div>
 
-              {/* RIGHT COLUMN — Billing */}
               <div className="rounded-xl border border-border bg-(--bg-primary) p-5 space-y-4 sticky top-0">
                 <div className="flex items-center gap-2">
                   <Receipt size={15} className="text-(--text-secondary)" />
@@ -258,7 +306,7 @@ export const AddVisitModal = ({
                       min={0}
                       step={100}
                       value={totalAmount || ""}
-                      onChange={(e) =>
+                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
                         setTotalAmount(Number(e.target.value) || 0)
                       }
                       className={`${inputClass} pl-9`}
@@ -281,41 +329,44 @@ export const AddVisitModal = ({
                       max={totalAmount}
                       step={100}
                       value={paidAmount || ""}
-                      onChange={(e) => {
-                    const value = e.target.value;
+                      readOnly={isEditing}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                        if (isEditing) return;
 
-                    if (Number(value) <= totalAmount || value === "") {
-                      setPaidAmount(Number(value) || 0);
-                    }
-                  }}
-                      className={`${inputClass} pl-9`}
+                        const value = e.target.value;
+                        if (Number(value) <= totalAmount || value === "") {
+                          setPaidAmount(Number(value) || 0);
+                        }
+                      }}
+                      className={`${inputClass} pl-9 ${isEditing ? "bg-gray-100 text-(--text-secondary) cursor-not-allowed" : ""}`}
                     />
                   </div>
-                    {/* Payment Method */}
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Payment Method <span className="text-red-500">*</span>
-                </label>
-
-                <select
-                  name="paymentMethod"
-                  className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-100 cursor-pointer"
-                  required
-                >
-                  <option value="">Select payment method</option>
-                  <option value="CASH">💵 Cash</option>
-                  <option value="ONLINE">🌐 Online</option>
-                  <option value="BANK">🏦 Bank</option>
-                </select>
-              </div>
                 </div>
 
-                {/* Premium summary card */}
-                <div className="rounded-xl bg-gradient-to-br from-(--bg-secondary) to-(--bg-primary) border border-border p-4 space-y-3">
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Payment Method <span className="text-red-500">*</span>
+                  </label>
+
+                  <select
+                    name="paymentMethod"
+                    value={paymentMethod}
+                    onChange={(e: ChangeEvent<HTMLSelectElement>) => setPaymentMethod(e.target.value)}
+                    className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-100 cursor-pointer disabled:cursor-not-allowed disabled:bg-gray-100"
+                    required
+                    disabled={isEditing}
+                  >
+                    <option value="">Select payment method</option>
+                    <option value="CASH">💵 Cash</option>
+                    <option value="ONLINE">🌐 Online</option>
+                    <option value="BANK">🏦 Bank</option>
+                  </select>
+                  {isEditing && <input type="hidden" name="paymentMethod" value={paymentMethod} />}
+                </div>
+
+                <div className="rounded-xl bg-linear-to-br from-(--bg-secondary) to-(--bg-primary) border border-border p-4 space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-(--text-secondary)">
-                      Due Amount
-                    </span>
+                    <span className="text-sm text-(--text-secondary)">Due Amount</span>
                     <span className="text-xl font-bold text-amber-500">
                       Rs{dueAmount.toLocaleString()}
                     </span>
@@ -324,9 +375,7 @@ export const AddVisitModal = ({
                   <div className="h-px bg-border" />
 
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-(--text-secondary)">
-                      Payment Status
-                    </span>
+                    <span className="text-sm text-(--text-secondary)">Payment Status</span>
                     <span
                       className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
                         paymentStatus === "PAID"
@@ -343,7 +392,6 @@ export const AddVisitModal = ({
               </div>
             </div>
 
-            {/* Error message */}
             {state.message && state.status === "error" && (
               <div className="mt-4 rounded-md bg-red-50 p-3 text-sm text-red-700">
                 {state.message}
@@ -351,14 +399,13 @@ export const AddVisitModal = ({
             )}
           </div>
 
-          {/* Footer */}
           <div className="flex justify-end gap-3 px-6 py-4 border-t border-border bg-(--bg-primary) shrink-0">
             <button
               type="button"
               onClick={onClose}
               className="rounded-lg border border-border px-5 py-2 text-sm font-medium text-(--text-primary) hover:bg-(--bg-secondary) transition-colors cursor-pointer"
             >
-              Cancel
+              {isEditing ? "Close" : "Cancel"}
             </button>
             <button
               type="submit"
@@ -366,7 +413,7 @@ export const AddVisitModal = ({
               className="flex cursor-pointer items-center gap-2 rounded-lg bg-blue-500 hover:bg-blue-700 px-5 py-2 text-sm font-semibold text-white disabled:opacity-50 transition-colors"
             >
               <Stethoscope size={15} />
-              {pending ? "Saving..." : "Add Visit"}
+              {pending ? "Saving..." : isEditing ? "Save Changes" : "Add Visit"}
             </button>
           </div>
         </form>

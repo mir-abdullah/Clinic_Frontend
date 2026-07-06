@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { Visit, Payment } from "@/utils/type";
 import { paymentAPI } from "@/utils/api";
 import { formatDateWithOrdinal } from "@/utils/helpers";
-import { X, Eye, Banknote, Landmark, Globe,  Loader2 } from "lucide-react";
+import { X, Eye, Banknote, Landmark, Globe, Loader2, Pencil } from "lucide-react";
+import { RecordPaymentModal } from "./RecordPayment";
 
 const paymentMethodConfig: Record<
   string,
@@ -13,6 +14,7 @@ const paymentMethodConfig: Record<
   CASH: { label: "CASH", icon: Banknote, className: "bg-green-100 text-green-700" },
   BANK: { label: "BANK", icon: Landmark, className: "bg-purple-100 text-purple-700" },
   ONLINE: { label: "ONLINE", icon: Globe, className: "bg-cyan-100 text-cyan-700" },
+  OTHER: { label: "OTHER", icon: Banknote, className: "bg-gray-100 text-gray-700" },
 };
 
 export const ViewVisitModal = ({
@@ -28,13 +30,13 @@ export const ViewVisitModal = ({
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [editingPayment, setEditingPayment] = useState<Payment | null>(null);
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
 
   useEffect(() => {
     if (!open) return;
 
     let active = true;
-    setLoading(true);
-    setError(null);
 
     paymentAPI
       .get(`visit/${visit.id}`)
@@ -54,8 +56,36 @@ export const ViewVisitModal = ({
   }, [open, visit.id]);
 
   const totalBilled = visit.totalAmount ?? 0;
-  const totalCollected = visit.paidAmount ?? 0;
-  const balance = visit.dueAmount ?? 0;
+  const totalCollected = visit.payments?.reduce((sum, payment) => sum + payment.amount, 0) || 0;
+  const balance = visit.totalAmount - totalCollected;
+
+  const openEditPayment = (payment: Payment) => {
+    setEditingPayment(payment);
+    setPaymentModalOpen(true);
+  };
+
+  const closePaymentModal = () => {
+    setPaymentModalOpen(false);
+    setEditingPayment(null);
+  };
+
+  const refreshPayments = () => {
+    setLoading(true);
+    paymentAPI
+      .get(`visit/${visit.id}`)
+      .then((res) => {
+        setPayments(res?.data?.payments ?? []);
+        setError(null);
+      })
+      .catch(() => {
+        setError("Failed to load payment history.");
+      })
+      .finally(() => {
+        setLoading(false);
+        setPaymentModalOpen(false);
+        setEditingPayment(null);
+      });
+  };
 
   useEffect(() => {
     if (!open) return;
@@ -177,7 +207,7 @@ export const ViewVisitModal = ({
                   return (
                     <div
                       key={payment.id}
-                      className="rounded-lg bg-(--bg-secondary) border border-border px-4 py-3 flex items-center justify-between"
+                      className="rounded-lg bg-(--bg-secondary) border border-border px-4 py-3 flex items-center justify-between gap-3"
                     >
                       <div className="space-y-1">
                         <span
@@ -197,9 +227,19 @@ export const ViewVisitModal = ({
                           <p className="text-xs text-(--text-secondary)">{payment.notes}</p>
                         )}
                       </div>
-                      <span className="text-base font-bold text-green-600">
-                        Rs{payment.amount.toLocaleString()}
-                      </span>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="text-base font-bold text-green-600">
+                          Rs{payment.amount.toLocaleString()}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => openEditPayment(payment)}
+                          className="inline-flex items-center gap-1 rounded-md border border-(--border-secondary) px-3 py-1.5 text-xs font-medium text-(--text-secondary) transition-colors hover:bg-(--bg-primary) hover:text-(--text-primary)"
+                        >
+                          <Pencil size={12} />
+                          Edit
+                        </button>
+                      </div>
                     </div>
                   );
                 })}
@@ -211,6 +251,17 @@ export const ViewVisitModal = ({
             )}
           </div>
         </div>
+
+        {paymentModalOpen && (
+          <RecordPaymentModal
+            key={editingPayment?.id ?? "new-payment"}
+            open={paymentModalOpen}
+            visit={visit}
+            payment={editingPayment}
+            onClose={closePaymentModal}
+            onSuccess={refreshPayments}
+          />
+        )}
 
         {/* Footer */}
         <div className="flex justify-end gap-3 px-6 py-4 border-t border-border shrink-0">

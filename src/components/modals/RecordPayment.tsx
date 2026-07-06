@@ -1,8 +1,8 @@
 "use client";
 
 import { useActionState, useEffect, useState } from "react";
-import { addPayment } from "@/actions/payment";
-import { Visit, actionState } from "@/utils/type";
+import { addPayment, editPayment } from "@/actions/payment";
+import { Payment, Visit, actionState } from "@/utils/type";
 import { X, CreditCard } from "lucide-react";
 
 const initialState: actionState = {
@@ -15,25 +15,36 @@ export const RecordPaymentModal = ({
   onClose = () => {},
   onSuccess = () => {},
   visit,
+  payment = null,
 }: {
   open?: boolean;
   onClose?: () => void;
   onSuccess?: (message: string) => void;
   visit: Visit;
+  payment?: Payment | null;
 }) => {
-
+  const isEditing = Boolean(payment);
   const addPaymentWithVisit = addPayment.bind(null, visit.id);
-  const [state, formAction, pending] = useActionState(
-    addPaymentWithVisit,
-    initialState
-  );
+  const editPaymentWithId = payment ? editPayment.bind(null, payment.id) : null;
+  const submitAction = async (prevState: actionState, formData: FormData) => {
+    if (isEditing && editPaymentWithId) {
+      return editPaymentWithId(prevState, formData);
+    }
+
+    return addPaymentWithVisit(prevState, formData);
+  };
+  const [state, formAction, pending] = useActionState(submitAction, initialState);
  
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState(payment ? String(payment.amount) : "");
+  const [method, setMethod] = useState<string>(payment?.method ?? "");
+  const [notes, setNotes] = useState<string>(payment?.notes ?? "");
 
 
   const previouslyPaid = visit?.paidAmount ?? 0;
   const totalBilled = visit?.totalAmount ?? 0;
-  const outstandingBalance = visit?.dueAmount ?? 0;
+  const outstandingBalance = isEditing && payment
+    ? Math.max(totalBilled - (previouslyPaid - payment.amount), 0)
+    : visit?.dueAmount ?? 0;
 
   useEffect(() => {
     if (state.status === "success") {
@@ -69,8 +80,9 @@ export const RecordPaymentModal = ({
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
           <div className="flex items-center gap-2">
+            <CreditCard size={18} className="text-(--text-primary)" />
             <h2 className="text-base font-semibold text-(--text-primary)">
-              💳 Record Payment
+              💳 {isEditing ? "Edit Payment" : "Record Payment"}
             </h2>
           </div>
           <button
@@ -96,6 +108,7 @@ export const RecordPaymentModal = ({
                 <div className="mt-1.5 w-full rounded-lg border border-border bg-(--bg-secondary) px-3 py-2.5 text-sm text-(--text-primary)">
                   {visit?.patient?.name} · {visit.reason}
                 </div>
+                <input type="hidden" name="visitId" value={visit.id} />
               </div>
             </div>
 
@@ -189,6 +202,8 @@ export const RecordPaymentModal = ({
 
                 <select
                   name="paymentMethod"
+                  value={method}
+                  onChange={(e) => setMethod(e.target.value)}
                   className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-100 cursor-pointer"
                   required
                 >
@@ -209,6 +224,8 @@ export const RecordPaymentModal = ({
                   name="notes"
                   rows={4}
                   placeholder="Add any notes about this payment (optional)"
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
                   className="w-full resize-none rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-100"
                 />
               </div>
@@ -237,7 +254,7 @@ export const RecordPaymentModal = ({
               className="flex cursor-pointer items-center gap-2 rounded-lg bg-green-500 hover:bg-green-600 px-5 py-2 text-sm font-semibold text-white disabled:opacity-50 transition-colors"
             >
               💳
-              {pending ? " Recording..." : " Record Payment"}
+              {pending ? " Recording..." : isEditing ? " Save Payment" : " Record Payment"}
             </button>
           </div>
         </form>

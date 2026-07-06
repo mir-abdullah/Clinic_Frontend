@@ -8,6 +8,7 @@ import {
   Bell,
   BellOff,
   ChevronDown,
+  Pencil,
   X,
   User,
   Clock,
@@ -32,9 +33,10 @@ const NEXT_STATUSES: Partial<Record<AppointmentStatus, AppointmentStatus[]>> = {
 
 interface Props {
   appointment: AppointmentWithPatient;
+  onEdit?: (appointment: AppointmentWithPatient) => void;
 }
 
-export default function AppointmentCard({ appointment: initial }: Props) {
+export default function AppointmentCard({ appointment: initial, onEdit }: Props) {
   const [appt, setAppt] = useState(initial);
   const [showActions, setShowActions] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -174,6 +176,17 @@ return (
               <Bell size={13} />
               {appt.reminderSent ? "Sent" : "Remind"}
             </button>
+
+            {onEdit && (
+              <button
+                onClick={() => onEdit(appt)}
+                title="Edit appointment"
+                className="flex cursor-pointer items-center gap-1.5 rounded-xl border border-white/70 bg-white/80 px-3 py-2 text-xs font-medium text-(--text-primary) transition-all hover:border-(--info-text) hover:text-(--info-text)"
+              >
+                <Pencil size={13} />
+                Edit
+              </button>
+            )}
 
             {/* Status progression dropdown */}
             {nextStatuses.length > 0 && (

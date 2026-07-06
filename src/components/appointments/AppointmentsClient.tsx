@@ -58,7 +58,16 @@ export default function AppointmentsClient({
 
   // New appointment modal is shared with the dashboard booking flow
   const [showBookModal, setShowBookModal] = useState(false);
+  const [editingAppointment, setEditingAppointment] = useState<AppointmentWithPatient | null>(null);
   const handleBookSlot = () => setShowBookModal(true);
+  const handleEditAppointment = (appointment: AppointmentWithPatient) => {
+    setEditingAppointment(appointment);
+    setShowBookModal(true);
+  };
+  const handleCloseModal = () => {
+    setShowBookModal(false);
+    setEditingAppointment(null);
+  };
 
   const appointments = initialDayData;
   const total       = appointments.length;
@@ -145,6 +154,7 @@ export default function AppointmentsClient({
           <DayAgendaView
             appointments={initialDayData}
             onBookSlot={handleBookSlot}
+            onEditAppointment={handleEditAppointment}
           />
         )}
 
@@ -167,15 +177,18 @@ export default function AppointmentsClient({
             total={initialListData.total}
             totalPages={initialListData.totalPages}
             page={initialListData.page}
+            onEditAppointment={handleEditAppointment}
           />
         )}
       </div>
 
       {showBookModal && (
         <BookAppointment
+          key={editingAppointment?.id ?? "new-appointment"}
           open={showBookModal}
-          onClose={() => setShowBookModal(false)}
-          onSuccess={() => setShowBookModal(false)}
+          appointment={editingAppointment}
+          onClose={handleCloseModal}
+          onSuccess={handleCloseModal}
         />
       )}
     </>

@@ -18,9 +18,14 @@ const SLOTS = Array.from({ length: 22 }, (_, i) => {
 interface Props {
   appointments: AppointmentWithPatient[];
   onBookSlot?: (time: string) => void;
+  onEditAppointment?: (appointment: AppointmentWithPatient) => void;
 }
 
-export default function DayAgendaView({ appointments, onBookSlot }: Props) {
+export default function DayAgendaView({
+  appointments,
+  onBookSlot,
+  onEditAppointment,
+}: Props) {
   // Map time → appointments (multiple can share a slot)
  const bySlot = useMemo(() => {
   const map = new Map<string, AppointmentWithPatient[]>();
@@ -92,7 +97,11 @@ export default function DayAgendaView({ appointments, onBookSlot }: Props) {
               {hasAppts ? (
                 <div className="space-y-2">
                   {slotAppts.map((appt) => (
-                    <AppointmentCard key={appt.id} appointment={appt} />
+                    <AppointmentCard
+                      key={appt.id}
+                      appointment={appt}
+                      onEdit={onEditAppointment}
+                    />
                   ))}
                 </div>
               ) : (

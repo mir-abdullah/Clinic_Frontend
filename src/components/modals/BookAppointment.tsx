@@ -10,38 +10,62 @@ import {
   X,
   MapPin,
 } from "lucide-react";
-import { useActionState, useState, useEffect } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { addAppointment } from "@/actions/appointments";
+import { addAppointment, editAppointment } from "@/actions/appointments";
 import { patientAPI } from "@/utils/api";
-import { Patient, addAppointmentActionState } from "@/utils/type";
+import type {
+  AppointmentActionState,
+  AppointmentWithPatient,
+  Patient,
+} from "@/utils/type";
 import { visitReasons } from "@/utils/data";
 
 type Step = "choice" | "search" | "new-patient" | "appointment";
+
+const CUSTOM_REASON_VALUE = "Other · Custom Reason";
+const OTHER_REASON_VALUE = "Other · Not Listed";
+const REASON_VALUES = new Set(
+  visitReasons.flatMap((group) =>
+    group.reasons.map((reason) => `${group.category} · ${reason}`),
+  ),
+);
 
 export const BookAppointment = ({
   open = true,
   onClose = () => {},
   onSuccess = () => {},
+  appointment = null,
 }: {
   open?: boolean;
   onClose?: () => void;
   onSuccess?: (message: string) => void;
+  appointment?: AppointmentWithPatient | null;
 }) => {
-  const [step, setStep] = useState<Step>("choice");
+  const isEditing = Boolean(appointment);
+  const [step, setStep] = useState<Step>(isEditing ? "appointment" : "choice");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Patient[]>([]);
-  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(
+    appointment ? ({ ...appointment.patient, address: "" } as Patient) : null,
+  );
   const [isSearching, setIsSearching] = useState(false);
-  const [selectedReason, setSelectedReason] = useState("");
+  const [selectedReason, setSelectedReason] = useState(() => {
+    const reason = appointment?.reason ?? "";
+    return reason && !REASON_VALUES.has(reason) ? CUSTOM_REASON_VALUE : reason;
+  });
+  const [customReason, setCustomReason] = useState(() => {
+    const reason = appointment?.reason ?? "";
+    return reason && !REASON_VALUES.has(reason) ? reason : "";
+  });
+
   const isCustom =
-    selectedReason === "Other · Custom Reason" ||
-    selectedReason === "Other · Not Listed";
+    selectedReason === CUSTOM_REASON_VALUE || selectedReason === OTHER_REASON_VALUE;
 
   const [state, action, isPending] = useActionState<
-    addAppointmentActionState,
+    AppointmentActionState,
     FormData
-  >(addAppointment, {
+  >(appointment ? editAppointment.bind(null, appointment.id) : addAppointment, {
     status: "idle",
     message: "",
   });
@@ -117,10 +141,15 @@ export const BookAppointment = ({
               <Calendar className="w-5 h-5" />
             </div>
             <h2 className="text-xl font-bold">
-              {step === "choice" && "Book Appointment"}
-              {step === "search" && "Select Patient"}
-              {step === "new-patient" && "New Patient Registration"}
-              {step === "appointment" && "Appointment Details"}
+              {isEditing && step === "appointment"
+                ? "Edit Appointment"
+                : step === "choice"
+                  ? "Book Appointment"
+                  : step === "search"
+                    ? "Select Patient"
+                    : step === "new-patient"
+                      ? "New Patient Registration"
+                      : "Appointment Details"}
             </h2>
           </div>
           <button
@@ -135,7 +164,7 @@ export const BookAppointment = ({
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-8 space-y-6">
           {/* Choice Step */}
-          {step === "choice" && (
+          {!isEditing && step === "choice" && (
             <div className="space-y-4">
               <p className="text-slate-600 mb-6">
                 How would you like to book an appointment?
@@ -173,7 +202,7 @@ export const BookAppointment = ({
           )}
 
           {/* Search Step */}
-          {step === "search" && (
+          {!isEditing && step === "search" && (
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-3">
@@ -238,7 +267,7 @@ export const BookAppointment = ({
           )}
 
           {/* New Patient + Appointment Step */}
-          {step === "new-patient" && (
+          {!isEditing && step === "new-patient" && (
             <form action={action} className="space-y-6">
               {state.status === "error" && (
                 <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm font-medium text-red-700">
@@ -367,6 +396,7 @@ export const BookAppointment = ({
                     <div className="relative">
                       <Clock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                       <input
+                      value={appointment?.time}
                         type="time"
                         name="time"
                         required
@@ -398,7 +428,13 @@ export const BookAppointment = ({
                     <select
                       name={isCustom ? undefined : "reason"}
                       value={selectedReason}
-                      onChange={(e) => setSelectedReason(e.target.value)}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setSelectedReason(value);
+                        if (value !== CUSTOM_REASON_VALUE && value !== OTHER_REASON_VALUE) {
+                          setCustomReason("");
+                        }
+                      }}
                       className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-slate-700 focus:bg-white transition-all"
                     >
                       <option value="">Select a reason</option>
@@ -428,6 +464,8 @@ export const BookAppointment = ({
                         name="reason"
                         required
                         placeholder="Enter custom reason..."
+                        value={customReason}
+                        onChange={(e) => setCustomReason(e.target.value)}
                         className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-slate-700 focus:bg-white transition-all"
                       />
                     </div>
@@ -474,7 +512,7 @@ export const BookAppointment = ({
           )}
 
           {/* Appointment Only Step */}
-          {step === "appointment" && selectedPatient && (
+          {(step === "appointment" || isEditing) && selectedPatient && (
             <form action={action} className="space-y-6">
               {state.status === "error" && (
                 <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm font-medium text-red-700">
@@ -487,7 +525,8 @@ export const BookAppointment = ({
                   {selectedPatient.name}
                 </div>
                 <div className="text-sm text-slate-600">
-                  {selectedPatient.phone} • {selectedPatient.address}
+                  {selectedPatient.phone}
+                  {selectedPatient.address ? ` • ${selectedPatient.address}` : ""}
                 </div>
               </div>
 
@@ -555,7 +594,13 @@ export const BookAppointment = ({
                     name={isCustom ? undefined : "reason"}
                     value={selectedReason}
                     required
-                    onChange={(e) => setSelectedReason(e.target.value)}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setSelectedReason(value);
+                        if (value !== CUSTOM_REASON_VALUE && value !== OTHER_REASON_VALUE) {
+                          setCustomReason("");
+                        }
+                      }}
                     className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-slate-700 focus:bg-white transition-all"
                   >
                     <option value="">Select a reason</option>
@@ -585,6 +630,8 @@ export const BookAppointment = ({
                       name="reason"
                       required
                       placeholder="Enter custom reason..."
+                      value={customReason}
+                      onChange={(e) => setCustomReason(e.target.value)}
                       className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-slate-700 focus:bg-white transition-all"
                     />
                   </div>
@@ -612,19 +659,30 @@ export const BookAppointment = ({
                 <button
                   type="button"
                   onClick={() => {
+                    if (isEditing) {
+                      onClose();
+                      return;
+                    }
+
                     setSelectedPatient(null);
                     setStep("search");
                   }}
                   className="px-6 py-2 rounded-lg border-2 border-slate-300 hover:bg-slate-50 transition-all font-medium text-slate-900"
                 >
-                  Back
+                  {isEditing ? "Cancel" : "Back"}
                 </button>
                 <button
                   type="submit"
                   disabled={isPending}
                   className="px-6 py-2 rounded-lg bg-slate-900 text-white hover:bg-slate-800 disabled:opacity-50 transition-all font-medium"
                 >
-                  {isPending ? "Booking..." : "Book Appointment"}
+                  {isPending
+                    ? isEditing
+                      ? "Saving..."
+                      : "Booking..."
+                    : isEditing
+                      ? "Save Changes"
+                      : "Book Appointment"}
                 </button>
               </div>
             </form>

@@ -68,7 +68,11 @@ export const RecentVisits = ({ visits }: { visits: Visit[] }) => {
             </TableHeader>
 
             <TableBody>
-              {visits.map((visit) => (
+              {visits.map((visit) => {
+                    const totalCollected = visit.payments?.reduce((sum, payment) => sum + payment.amount, 0) || 0;
+              const dueAmount = visit.totalAmount - totalCollected;
+              const paymentStatus = dueAmount === 0 ? "PAID" : (totalCollected > 0 ? "PARTIAL" : "PENDING");
+              return (
                 <TableRow
                   key={visit.id}
                   className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
@@ -98,34 +102,34 @@ export const RecentVisits = ({ visits }: { visits: Visit[] }) => {
                   </TableCell>
 
                   <TableCell className="py-4 text-gray-700">
-                    Rs{visit.paidAmount.toLocaleString()}
+                    Rs{totalCollected.toLocaleString()}
                   </TableCell>
 
                   <TableCell
                     className={`py-4 font-semibold ${
-                      visit.dueAmount > 0
+                      dueAmount > 0
                         ? "text-amber-500"
                         : "text-green-500"
                     }`}
                   >
-                    Rs{visit.dueAmount.toLocaleString()}
+                    Rs{dueAmount.toLocaleString()}
                   </TableCell>
 
                   <TableCell className="py-4">
                     <span
                       className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                        visit.paymentStatus === "PAID"
+                        paymentStatus === "PAID"
                           ? "bg-green-100 text-green-600"
-                          : visit.paymentStatus === "PARTIAL"
+                          : paymentStatus === "PARTIAL"
                           ? "bg-yellow-100 text-yellow-600"
                           : "bg-red-100 text-red-600"
                       }`}
                     >
-                      {visit.paymentStatus}
+                      {paymentStatus || "N/A"}
                     </span>
                   </TableCell>
                 </TableRow>
-              ))}
+              )})}
             </TableBody>
           </Table>
         )}
