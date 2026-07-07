@@ -43,7 +43,7 @@ export default async function DashboardPage() {
         </div>
         <div className="flex flex-col gap-3">
             <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                <StatsCard title="Today's Appointments" value={appointmentsToday?.data?.total || 0} icon="📅" description="Number of visits today"/>
+                <StatsCard title="Today's Appointments" value={appointmentsToday?.data?.total || 0} icon="📅" description="Number of appointments today"/>
                 <StatsCard title="Number Of Visits Today" value={todayCount?.data?.count || 0} icon="📊" description="Total visits today"/>
                 <StatsCard title="Patients This Month" value={numberOfpatientsMonth?.data?.totalPatientsThisMonth} icon="👥" description="Number of patients this month"/>
                 <StatsCard title="Monthly Revenue" value={`Rs.${monthlyRevenue?.data?.totalRevenue /1000 || 0}K`} icon="💰" description="Revenue generated this month"/>

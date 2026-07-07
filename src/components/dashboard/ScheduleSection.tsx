@@ -45,7 +45,8 @@ export const ScheduleSection = ({appointments}: {appointments: Appointment[]}) =
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {appointments.map((appointment) => (
+                        {appointments.slice(0, 5).map((appointment) => {
+                            return (
                             <TableRow key={appointment.id} className="border-border hover:bg-(--bg-secondary) transition-colors">
                                 <TableCell className="text-(--text-primary) font-medium">{appointment.patient?.name || "N/A"}</TableCell>
                                 <TableCell className="text-(--text-secondary)">{appointment.patient?.phone || "N/A"}</TableCell>
@@ -53,7 +54,8 @@ export const ScheduleSection = ({appointments}: {appointments: Appointment[]}) =
                                 <TableCell className="text-(--text-secondary)">{appointment.time}</TableCell>
                                 <TableCell className="text-(--text-secondary)">{appointment.reason || "N/A"}</TableCell>
                             </TableRow>
-                        ))}
+                        )
+                        })}
                     </TableBody>
                 </Table>
 

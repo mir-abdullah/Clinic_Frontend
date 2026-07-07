@@ -23,6 +23,10 @@ export async function addAppointment(
     const reason = formData.get("reason") as string;
     const notes = formData.get("notes") as string;
 
+    
+
+    
+
     const appointmentData: addAppointmentDTO = {
         name,
         phone,
@@ -42,7 +46,7 @@ export async function addAppointment(
     revalidatePath("/appointments");
     return {
         status: "success" as const,
-        message: "Appointment added successfully",
+        message: "Appointment booked successfully",
 
     };
 }

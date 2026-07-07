@@ -183,73 +183,77 @@ export const ViewVisitModal = ({
           </div>
 
           {/* PAYMENT HISTORY */}
-          <div className="space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-widest text-(--text-secondary)">
-              Payment History
-            </p>
+        <div className="space-y-2">
+  <p className="text-xs font-semibold uppercase tracking-widest text-(--text-secondary)">
+    Payment History
+  </p>
 
-            {loading ? (
-              <div className="flex items-center justify-center gap-2 py-6 text-sm text-(--text-secondary)">
-                <Loader2 size={16} className="animate-spin" />
-                Loading payments...
-              </div>
-            ) : error ? (
-              <div className="rounded-lg border border-dashed border-red-300 px-4 py-6 text-center">
-                <p className="text-sm text-red-600">{error}</p>
-              </div>
-            ) : payments.length > 0 ? (
-              <div className="space-y-2">
-                {payments.map((payment) => {
-                  const config =
-                    paymentMethodConfig[payment.method] ?? paymentMethodConfig.OTHER;
-                  const Icon = config.icon;
+  {loading ? (
+    <div className="flex items-center justify-center gap-2 py-6 text-sm text-(--text-secondary)">
+      <Loader2 size={16} className="animate-spin" />
+      Loading payments...
+    </div>
+  ) : error ? (
+    <div className="rounded-lg border border-dashed border-red-300 px-4 py-6 text-center">
+      <p className="text-sm text-red-600">{error}</p>
+    </div>
+  ) : payments.length > 0 ? (
+    <div className="space-y-2">
+      {payments.map((payment) => {
+        const config =
+          paymentMethodConfig[payment.method] ?? paymentMethodConfig.OTHER;
+        const Icon = config.icon;
 
-                  return (
-                    <div
-                      key={payment.id}
-                      className="rounded-lg bg-(--bg-secondary) border border-border px-4 py-3 flex items-center justify-between gap-3"
-                    >
-                      <div className="space-y-1">
-                        <span
-                          className={`inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full ${config.className}`}
-                        >
-                          <Icon size={11} />
-                          {config.label}
-                        </span>
-                        <p className="text-xs text-(--text-secondary)">
-                          {formatDateWithOrdinal(payment.createdAt)} •{" "}
-                          {new Date(payment.createdAt).toLocaleTimeString([], {
-                            hour: "numeric",
-                            minute: "2-digit",
-                          })}
-                        </p>
-                        {payment.notes && (
-                          <p className="text-xs text-(--text-secondary)">{payment.notes}</p>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-2 shrink-0">
-                        <span className="text-base font-bold text-green-600">
-                          Rs{payment.amount.toLocaleString()}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => openEditPayment(payment)}
-                          className="inline-flex items-center gap-1 rounded-md border border-(--border-secondary) px-3 py-1.5 text-xs font-medium text-(--text-secondary) transition-colors hover:bg-(--bg-primary) hover:text-(--text-primary)"
-                        >
-                          <Pencil size={12} />
-                          Edit
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
+        return (
+          <div
+            key={payment.id}
+            className="group relative rounded-lg bg-(--bg-secondary) border border-border px-4 py-3"
+          >
+            <button
+              type="button"
+              onClick={() => openEditPayment(payment)}
+              className="absolute top-2.5 cursor-pointer right-2.5 inline-flex items-center justify-center rounded-md p-1.5 text-(--text-secondary) opacity-60 transition-all hover:opacity-100 hover:bg-(--bg-primary) hover:text-(--text-primary)"
+              aria-label="Edit payment"
+            >
+              <Pencil size={13} />
+            </button>
+
+            <div className="flex items-start justify-between gap-3 pr-7">
+              <div className="space-y-1.5">
+                <span
+                  className={`inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full ${config.className}`}
+                >
+                  <Icon size={11} />
+                  {config.label}
+                </span>
+                <p className="text-xs text-(--text-secondary)">
+                  {formatDateWithOrdinal(payment.createdAt)} •{" "}
+                  {new Date(payment.createdAt).toLocaleTimeString([], {
+                    hour: "numeric",
+                    minute: "2-digit",
+                  })}
+                </p>
+                {payment.notes && (
+                  <p className="text-xs text-(--text-secondary) line-clamp-1">
+                    {payment.notes}
+                  </p>
+                )}
               </div>
-            ) : (
-              <div className="rounded-lg border border-dashed border-border px-4 py-6 text-center">
-                <p className="text-sm text-(--text-secondary)">No payments recorded yet.</p>
-              </div>
-            )}
+
+              <span className="text-[17px] font-bold text-green-600 shrink-0 tabular-nums">
+                Rs{payment.amount.toLocaleString()}
+              </span>
+            </div>
           </div>
+        );
+      })}
+    </div>
+  ) : (
+    <div className="rounded-lg border border-dashed border-border px-4 py-6 text-center">
+      <p className="text-sm text-(--text-secondary)">No payments recorded yet.</p>
+    </div>
+  )}
+</div>
         </div>
 
         {paymentModalOpen && (

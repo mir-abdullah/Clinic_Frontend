@@ -10,7 +10,7 @@ import {
   X,
   MapPin,
 } from "lucide-react";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useState ,useRef} from "react";
 import { toast } from "sonner";
 import { addAppointment, editAppointment } from "@/actions/appointments";
 import { patientAPI } from "@/utils/api";
@@ -20,6 +20,7 @@ import type {
   Patient,
 } from "@/utils/type";
 import { visitReasons } from "@/utils/data";
+import { IMaskInput } from "react-imask";
 
 type Step = "choice" | "search" | "new-patient" | "appointment";
 
@@ -42,6 +43,8 @@ export const BookAppointment = ({
   onSuccess?: (message: string) => void;
   appointment?: AppointmentWithPatient | null;
 }) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const isEditing = Boolean(appointment);
   const [step, setStep] = useState<Step>(isEditing ? "appointment" : "choice");
   const [searchQuery, setSearchQuery] = useState("");
@@ -306,11 +309,23 @@ export const BookAppointment = ({
                     </label>
                     <div className="relative">
                       <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                      <input
-                        type="tel"
+                      <IMaskInput
+                        placeholder="03XX-XXXXXX"
+                        mask="0000-0000000"
                         name="phone"
                         required
-                        placeholder="03XX-XXXXXXX"
+                        inputRef={inputRef}
+                        onAccept={(value) => {
+                          if (!inputRef.current) return;
+
+                          if (value.replace("-", "").length === 11) {
+                            inputRef.current.setCustomValidity("");
+                          } else {
+                            inputRef.current.setCustomValidity(
+                              "Please enter a valid 11-digit phone number.",
+                            );
+                          }
+                        }}
                         className="w-full pl-12 pr-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-slate-700 focus:bg-white transition-all"
                       />
                     </div>
@@ -396,7 +411,7 @@ export const BookAppointment = ({
                     <div className="relative">
                       <Clock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                       <input
-                      value={appointment?.time}
+                        value={appointment?.time}
                         type="time"
                         name="time"
                         required
@@ -431,7 +446,10 @@ export const BookAppointment = ({
                       onChange={(e) => {
                         const value = e.target.value;
                         setSelectedReason(value);
-                        if (value !== CUSTOM_REASON_VALUE && value !== OTHER_REASON_VALUE) {
+                        if (
+                          value !== CUSTOM_REASON_VALUE &&
+                          value !== OTHER_REASON_VALUE
+                        ) {
                           setCustomReason("");
                         }
                       }}
@@ -526,7 +544,9 @@ export const BookAppointment = ({
                 </div>
                 <div className="text-sm text-slate-600">
                   {selectedPatient.phone}
-                  {selectedPatient.address ? ` • ${selectedPatient.address}` : ""}
+                  {selectedPatient.address
+                    ? ` • ${selectedPatient.address}`
+                    : ""}
                 </div>
               </div>
 
@@ -546,6 +566,7 @@ export const BookAppointment = ({
                   <div className="relative">
                     <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                     <input
+                      defaultValue={appointment?.date?.split("T")[0]}
                       type="date"
                       name="date"
                       required
@@ -562,6 +583,7 @@ export const BookAppointment = ({
                   <div className="relative">
                     <Clock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                     <input
+                      defaultValue={appointment?.time}
                       type="time"
                       name="time"
                       required
@@ -594,13 +616,16 @@ export const BookAppointment = ({
                     name={isCustom ? undefined : "reason"}
                     value={selectedReason}
                     required
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        setSelectedReason(value);
-                        if (value !== CUSTOM_REASON_VALUE && value !== OTHER_REASON_VALUE) {
-                          setCustomReason("");
-                        }
-                      }}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setSelectedReason(value);
+                      if (
+                        value !== CUSTOM_REASON_VALUE &&
+                        value !== OTHER_REASON_VALUE
+                      ) {
+                        setCustomReason("");
+                      }
+                    }}
                     className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-slate-700 focus:bg-white transition-all"
                   >
                     <option value="">Select a reason</option>

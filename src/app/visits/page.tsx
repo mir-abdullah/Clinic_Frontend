@@ -46,9 +46,9 @@ export default async function VisitsPage({
       </div>
 
       <div className="mt-10 flex lg:grid-cols-4 gap-6 justify-between">
-        <StatsCard title="Total Revenue(Month)" value={`Rs.${monthlyRevenue}`} icon="💰" description="Revenue generated this month" />
-        <StatsCard title="Collected Revenue" value={`Rs.${collectedRevenue}`} icon="💵" description={`${((collectedRevenue / monthlyRevenue) * 100).toFixed(2) || 0}% of monthly revenue`} />
-        <StatsCard title="Pending Revenue" value={`Rs.${pendingRevenue}`} icon="⏳" description={`${((pendingRevenue / monthlyRevenue) * 100).toFixed(2) || 0}% of monthly revenue`} />
+        <StatsCard title="Total Revenue(Month)" value={`Rs.${monthlyRevenue/1000}K`} icon="💰" description="Revenue generated this month" />
+        <StatsCard title="Collected Revenue" value={`Rs.${collectedRevenue/1000}K`} icon="💵" description={`${((collectedRevenue / monthlyRevenue) * 100).toFixed(2) || 0}% of monthly revenue`} />
+        <StatsCard title="Pending Revenue" value={`Rs.${pendingRevenue/1000}K`} icon="⏳" description={`${((pendingRevenue / monthlyRevenue) * 100).toFixed(2) || 0}% of monthly revenue`} />
         <StatsCard title="Total Visits" value={visitCount} icon="👥" description="Total number of visits this month" />
       </div>
 

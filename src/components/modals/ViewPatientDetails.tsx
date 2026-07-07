@@ -283,7 +283,8 @@ export const ViewPatientModal = ({
                       </thead>
                       <tbody className="divide-y divide-slate-100">
                         {visits.map((visit) => {
-                          const due = visit.totalAmount - visit.paidAmount;
+                          const paidAmount =visit.payments?.reduce((sum, payment) => sum + payment.amount, 0) || 0;
+                          const due = visit.totalAmount - paidAmount;
                           return (
                             <tr key={visit.id} className="hover:bg-slate-50/70 transition-colors">
                               <td className="px-4 py-3.5 text-slate-500 whitespace-nowrap">

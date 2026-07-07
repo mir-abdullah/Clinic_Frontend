@@ -88,8 +88,6 @@ const VisitActions = ({ visit }: { visit: Visit }) => {
             />
           )
         }
-
-      
     </div>
   )
 }
