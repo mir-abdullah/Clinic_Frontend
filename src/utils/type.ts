@@ -1,3 +1,4 @@
+import { LucideIcon } from "lucide-react";
 
 export type Patient = {
   id: string;
@@ -182,3 +183,11 @@ export type AppointmentActionState = {
   message: string;
 };
  
+export type ReportCardProps = {
+  title: string;
+  description: string;
+  icon: LucideIcon;
+  iconBg: string; // hex — Tailwind CSS vars don't resolve at runtime, so pass hex directly
+  iconColor: string; // hex
+  endpoint: string; // e.g. "/api/reports/visits"
+};

@@ -25,3 +25,8 @@ export const paymentAPI =axios.create({
     baseURL: "http://localhost:5000/api/payments",
   
 })
+
+export const reportAPI =axios.create({
+    baseURL: "http://localhost:5000/api/reports",
+  
+})
