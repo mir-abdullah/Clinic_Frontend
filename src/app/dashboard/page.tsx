@@ -9,6 +9,10 @@ import { patientAPI } from "@/utils/api";
 import { appointmentAPI } from "@/utils/api";
 import { visitAPI } from "@/utils/api";
 
+export const metadata = {
+  title: "Dashboard | Mehreen Dental Clinic",
+};
+
 export default async function DashboardPage() {
 
     //api calls

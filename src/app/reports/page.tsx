@@ -1,6 +1,10 @@
 import { Stethoscope, Receipt, CalendarClock, Users } from "lucide-react";
 import ReportCard from "@/components/reports/ReportCard";
 
+export const metadata = {
+  title: "Reports | Mehreen Dental Clinic",
+};
+
 export default function ReportsPage() {
   const reportCards = [
     {

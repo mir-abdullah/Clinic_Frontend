@@ -6,6 +6,10 @@ import { VisitPagination } from "@/components/visits/VisitsPagination";
 import { VisitFilters } from "@/components/visits/VisitFilters";
 import { Suspense } from "react";
 
+export const metadata = {
+  title: "Visits | Mehreen Dental Clinic",
+};
+
 export default async function VisitsPage({
   searchParams,
 }: {

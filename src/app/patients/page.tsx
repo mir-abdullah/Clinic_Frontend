@@ -4,6 +4,11 @@ import { patientAPI } from "@/utils/api"
 import { VisitPagination } from "@/components/visits/VisitsPagination";
 import { Suspense } from "react";
 
+
+export const metadata = {
+  title: "Patients | Mehreen Dental Clinic",
+};
+
 export default async function PatientsPage({searchParams}: {searchParams: Promise<{page?: string; search?: string}>}) {
     const { page, search } = await searchParams;
   const currentPage = Number(page) || 1;
