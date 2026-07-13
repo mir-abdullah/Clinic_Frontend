@@ -25,6 +25,7 @@ export async function addPayment(
         visitId,
         notes
     }
+
     await paymentAPI.post("/add", paymentData)
     revalidatePath("/visits")
     return {

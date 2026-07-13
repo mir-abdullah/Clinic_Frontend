@@ -109,7 +109,7 @@ export const ViewPatientModal = ({
     <>
       {/* ── Edit Patient Modal ── */}
       {editOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
           <AddPatient
             key={patient.id}
             mode="edit"
@@ -149,7 +149,7 @@ export const ViewPatientModal = ({
               <button
                 type="button"
                 onClick={() => setEditOpen(true)} // ← simply open the edit modal
-                className="flex items-center gap-2 px-4 py-2 text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+                className="flex items-center gap-2 px-4 py-2 text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
               >
                 <Pencil className="w-4 h-4" />
                 Edit
@@ -157,7 +157,7 @@ export const ViewPatientModal = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="w-9 h-9 flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+                className="w-9 h-9 flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -230,7 +230,7 @@ export const ViewPatientModal = ({
                   key={tab}
                   type="button"
                   onClick={() => setActiveTab(tab)}
-                  className={`flex items-center gap-2 py-4 mr-8 text-sm border-b-2 transition-colors ${
+                  className={`flex items-center gap-2 py-4 mr-8 text-sm border-b-2 transition-colors cursor-pointer ${
                     activeTab === tab
                       ? "border-slate-900 text-slate-900 font-medium"
                       : "border-transparent text-slate-400 hover:text-slate-600"
@@ -245,11 +245,11 @@ export const ViewPatientModal = ({
             {/* ── Tab content ── */}
             <div className="px-8 py-6">
               {loading ? (
-                <div className="flex items-center justify-center py-20 text-slate-400 gap-2">
+                <div className="flex items-center justify-center py-20 text-slate-400 gap-2 ">
                   <Loader2 className="w-5 h-5 animate-spin" />
                   <span className="text-sm">Loading…</span>
                 </div>
-              ) : error ? (
+              ) : error ? ( 
                 <div className="flex items-center justify-center py-20 text-red-500 text-sm gap-2">
                   <AlertCircle className="w-4 h-4" />
                   {error}
@@ -364,7 +364,7 @@ function InfoChip({
   icon, text, label, truncate,
 }: {
   icon: React.ReactNode;
-  text: string;
+  text?: string;
   label?: string;
   truncate?: boolean;
 }) {
@@ -372,7 +372,7 @@ function InfoChip({
     <span className={`flex items-center gap-2 text-sm text-slate-500 ${truncate ? "truncate max-w-xs" : ""}`}>
       <span className="text-slate-400 shrink-0">{icon}</span>
       {label && <span className="text-slate-400">{label}:</span>}
-      <span className={truncate ? "truncate" : ""}>{text}</span>
+      <span className={truncate ? "truncate" : ""}>{text || "—"}</span>
     </span>
   );
 }

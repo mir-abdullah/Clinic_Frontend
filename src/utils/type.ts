@@ -127,9 +127,7 @@ export type  addVisitDTO = {
   prescription?: string;
   notes?: string;
   totalAmount: number;
-  paidAmount: number;
-  dueAmount: number;
-  paymentStatus: "PAID" | "PENDING" | "PARTIAL";
+  paidAmount?: number;
   paymentMethod?: "CASH" | "CARD" | "ONLINE";
 }
 

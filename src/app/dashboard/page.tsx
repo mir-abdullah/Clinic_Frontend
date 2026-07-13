@@ -16,17 +16,16 @@ export const metadata = {
 export default async function DashboardPage() {
 
     //api calls
+    
 
     const [appointmentsToday, numberOfpatientsMonth, monthlyRevenue, last5Visits, todayCount] = await Promise.all([
         appointmentAPI.get("/today"),
         patientAPI.get("/total/count/month"),
-        visitAPI.get("/monthly/revenue"),
+        visitAPI.get("/Monthlystats"),
         visitAPI.get("/recent/5"),
         visitAPI.get("/today/count"),
 
     ]);
-
-   
  
     const currentDate = new Date();
     const formattedDate = currentDate.toLocaleDateString(undefined, {
@@ -49,12 +48,12 @@ export default async function DashboardPage() {
             <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
                 <StatsCard title="Today's Appointments" value={appointmentsToday?.data?.total || 0} icon="📅" description="Number of appointments today"/>
                 <StatsCard title="Number Of Visits Today" value={todayCount?.data?.count || 0} icon="📊" description="Total visits today"/>
-                <StatsCard title="Patients This Month" value={numberOfpatientsMonth?.data?.totalPatientsThisMonth} icon="👥" description="Number of patients this month"/>
+                <StatsCard title="Patients This Month" value={numberOfpatientsMonth?.data?.totalPatientsThisMonth || 0} icon="👥" description="Number of patients this month"/>
                 <StatsCard title="Monthly Revenue" value={`Rs.${monthlyRevenue?.data?.totalRevenue /1000 || 0}K`} icon="💰" description="Revenue generated this month"/>
 
             </div>
             <div className=" flex gap-3 ">
-                <ScheduleSection  appointments={appointmentsToday?.data?.appointments} />
+                <ScheduleSection  appointments={appointmentsToday?.data?.appointments || []} />
                 <QuickActionsClient actions={quickActions} />
             </div>
             <div className="lg:mr-3 ">

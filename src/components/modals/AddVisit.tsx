@@ -65,7 +65,7 @@ export const AddVisitModal = ({
 
   const [state, formAction, pending] = useActionState(submitAction, initialState);
   const [totalAmount, setTotalAmount] = useState<number>(visit?.totalAmount ?? 0);
-  const [paidAmount, setPaidAmount] = useState<number>(visit?.paidAmount ?? 0);
+  const [paidAmount, setPaidAmount] = useState<number>(visit?.payments?.reduce((sum, payment) => sum + payment.amount, 0) ?? 0);
   const [selectedReason, setSelectedReason] = useState<string>(getReasonValue(visit?.reason));
   const [customReason, setCustomReason] = useState<string>(() => {
     const reason = visit?.reason ?? "";

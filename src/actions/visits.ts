@@ -36,8 +36,7 @@ export const addVisit = async (
     notes,
     totalAmount,
     paidAmount,
-    dueAmount,
-    paymentStatus,
+    
     paymentMethod: paymentMethod as "CASH" | "CARD" | "ONLINE"
   };
   await visitAPI.post("/add", visitData);
@@ -63,14 +62,7 @@ export const editVisit = async (
   const prescription = formData.get("prescription") as string;
   const notes = formData.get("notes") as string;
   const totalAmount = parseFloat(formData.get("totalAmount") as string);
-  const paidAmount = parseFloat(formData.get("paidAmount") as string) || 0;
-  const dueAmount = Math.max(totalAmount - paidAmount, 0);
-  const paymentStatus: "PAID" | "PENDING" | "PARTIAL" =
-    paidAmount == 0
-      ? "PENDING"
-      : paidAmount == totalAmount
-        ? "PAID"
-        : "PARTIAL";
+  
   const paymentMethod = formData.get("paymentMethod") as string;
 
   const visitData: addVisitDTO = {
@@ -83,9 +75,6 @@ export const editVisit = async (
     prescription,
     notes,
     totalAmount,
-    paidAmount,
-    dueAmount,
-    paymentStatus,
     paymentMethod: paymentMethod as "CASH" | "CARD" | "ONLINE",
   };
 

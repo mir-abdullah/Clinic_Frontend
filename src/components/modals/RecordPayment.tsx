@@ -40,11 +40,12 @@ export const RecordPaymentModal = ({
   const [notes, setNotes] = useState<string>(payment?.notes ?? "");
 
 
-  const previouslyPaid = visit?.paidAmount ?? 0;
+  const previouslyPaid = visit?.payments?.reduce((sum, payment) => sum + payment.amount, 0) ?? 0;
   const totalBilled = visit?.totalAmount ?? 0;
+  const dueAmount = Math.max(totalBilled - previouslyPaid, 0);
   const outstandingBalance = isEditing && payment
     ? Math.max(totalBilled - (previouslyPaid - payment.amount), 0)
-    : visit?.dueAmount ?? 0;
+    : dueAmount ?? 0;
 
   useEffect(() => {
     if (state.status === "success") {

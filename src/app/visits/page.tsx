@@ -46,7 +46,7 @@ export default async function VisitsPage({
             Manage your visits and keep track of patient interactions.
           </p>
         </div>
-        <ReportButton />
+        {/* <ReportButton /> */}
       </div>
 
       <div className="mt-10 flex lg:grid-cols-4 gap-6 justify-between">
