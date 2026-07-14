@@ -1,6 +1,5 @@
 import { Buttons } from "@/components/dashboard/Buttons";
 import { RecentVisits } from "@/components/dashboard/RecentVisits";
-import { API } from "@/utils/api";
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { ScheduleSection } from "@/components/dashboard/ScheduleSection";
 import { quickActions } from "@/utils/data";
@@ -8,10 +7,14 @@ import { QuickActionsClient } from "./quickActions";
 import { patientAPI } from "@/utils/api";
 import { appointmentAPI } from "@/utils/api";
 import { visitAPI } from "@/utils/api";
+import { Metadata } from "next";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Dashboard | Mehreen Dental Clinic",
-};
+  icons: {
+    icon: "/icon.svg",
+  },
+}
 
 export default async function DashboardPage() {
 
