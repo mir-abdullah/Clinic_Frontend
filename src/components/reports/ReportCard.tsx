@@ -144,7 +144,7 @@ export default function ReportCard({
           <button
             onClick={handleDownload}
             disabled={downloading}
-            className="flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded-lg border px-4 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+            className="flex h-10 items-center cursor-pointer justify-center gap-2 whitespace-nowrap rounded-lg border px-4 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 hover:bg-(--primary-dark) hover:text-black"
             style={{
               borderColor: "var(--primary-dark)",
               backgroundColor: "var(--primary-dark)",

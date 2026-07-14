@@ -48,21 +48,24 @@ export const AddPatient = ({
   // No reset useEffect needed — parent should pass key={patient?.id ?? "add"}
   // so React remounts this component cleanly when the patient changes.
 
-  const patientAction = async (
-    prevState: AddPatientActionState,
-    formData: FormData
-  ) => {
-    if (mode === "edit" && patient) {
-      return editPatient(patient.id, prevState, formData);
-    }
-    return addPatient(prevState, formData);
-  };
+const patientAction = async (
+  prevState: AddPatientActionState,
+  formData: FormData
+): Promise<AddPatientActionState> => {
+  if (mode === "edit" && patient) {
+    return editPatient(patient.id, prevState, formData);
+  }
 
-  const [formState, formAction, isPending] = useActionState(patientAction, {
-    status: "",
-    message: "",
-  });
+  return addPatient(prevState, formData);
+};
 
+const initialState: AddPatientActionState = {
+  status: "idle",
+  message: "",
+};
+    const [formState, formAction, isPending] = useActionState(patientAction, initialState
+    );
+  
   useEffect(() => {
     if (formState.status === "success") {
       onSuccess(formState.message);
@@ -83,7 +86,7 @@ export const AddPatient = ({
       onClick={(event) => event.stopPropagation()}
     >
       {/* Header */}
-      <div className="relative px-8 py-6 bg-[var(--primary-dark)] text-white overflow-hidden">
+      <div className="relative px-8 py-6 bg-(--primary-dark) text-white overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2"></div>
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-white rounded-full blur-3xl transform -translate-x-1/2 translate-y-1/2"></div>
@@ -131,13 +134,13 @@ export const AddPatient = ({
         {/* Patient Information Section */}
         <section className="space-y-4">
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[var(--primary-dark)] shadow-sm">
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-(--primary-dark) shadow-sm">
               <User className="w-4.5 h-4.5 text-white" strokeWidth={2.5} />
             </div>
             <h3 className="text-sm uppercase tracking-wider font-bold text-slate-700">
               Patient Information
             </h3>
-            <div className="flex-1 h-px bg-gradient-to-r from-slate-300 to-transparent"></div>
+            <div className="flex-1 h-px bg-linear-to-r from-slate-300 to-transparent"></div>
           </div>
 
           <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 p-6 space-y-5 hover:shadow-md transition-shadow">
@@ -149,7 +152,7 @@ export const AddPatient = ({
                 </label>
                 <div className="relative">
                   <div
-                    className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${focusedField === "fullName" ? "text-[var(--primary-dark)]" : "text-slate-400"}`}
+                    className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${focusedField === "fullName" ? "text-(--primary-dark)" : "text-slate-400"}`}
                   >
                     <User className="w-5 h-5" strokeWidth={2} />
                   </div>
@@ -160,7 +163,7 @@ export const AddPatient = ({
                     onChange={(e) => handleChange("fullName", e.target.value)}
                     onFocus={() => setFocusedField("fullName")}
                     onBlur={() => setFocusedField(null)}
-                    className="w-full pl-12 pr-4 py-3.5 bg-slate-50/80 border-2 border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[var(--primary-dark)] focus:bg-white focus:shadow-lg transition-all text-[15px]"
+                    className="w-full pl-12 pr-4 py-3.5 bg-slate-50/80 border-2 border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-(--primary-dark) focus:bg-white focus:shadow-lg transition-all text-[15px]"
                     placeholder="Enter patient's full legal name"
                   />
                 </div>
@@ -173,7 +176,7 @@ export const AddPatient = ({
                 </label>
                 <div className="relative">
                   <div
-                    className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${focusedField === "age" ? "text-[var(--primary-dark)]" : "text-slate-400"}`}
+                    className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${focusedField === "age" ? "text-(--primary-dark)" : "text-slate-400"}`}
                   >
                     <Calendar className="w-5 h-5" strokeWidth={2} />
                   </div>
@@ -184,7 +187,7 @@ export const AddPatient = ({
                     onChange={(e) => handleChange("age", e.target.value)}
                     onFocus={() => setFocusedField("age")}
                     onBlur={() => setFocusedField(null)}
-                    className="w-full pl-12 pr-16 py-3.5 bg-slate-50/80 border-2 border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[var(--primary-dark)] focus:bg-white focus:shadow-lg transition-all text-[15px]"
+                    className="w-full pl-12 pr-16 py-3.5 bg-slate-50/80 border-2 border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-(--primary-dark) focus:bg-white focus:shadow-lg transition-all text-[15px]"
                     placeholder="Enter age"
                   />
                   {formData.age && (
@@ -208,7 +211,7 @@ export const AddPatient = ({
                   onBlur={() => setFocusedField(null)}
                   className={`w-full px-4 py-3.5 bg-slate-50/80 border-2 rounded-xl text-slate-900 focus:outline-none focus:bg-white focus:shadow-lg transition-all text-[15px] appearance-none cursor-pointer ${
                     focusedField === "gender"
-                      ? "border-[var(--primary-dark)]"
+                      ? "border-(--primary-dark)"
                       : "border-slate-200"
                   }`}
                 >
@@ -226,7 +229,7 @@ export const AddPatient = ({
                 </label>
                 <div className="relative">
                   <div
-                    className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${focusedField === "occupation" ? "text-[var(--primary-dark)]" : "text-slate-400"}`}
+                    className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${focusedField === "occupation" ? "text-(--primary-dark)" : "text-slate-400"}`}
                   >
                     <Briefcase className="w-5 h-5" strokeWidth={2} />
                   </div>
@@ -237,7 +240,7 @@ export const AddPatient = ({
                     onChange={(e) => handleChange("occupation", e.target.value)}
                     onFocus={() => setFocusedField("occupation")}
                     onBlur={() => setFocusedField(null)}
-                    className="w-full pl-12 pr-4 py-3.5 bg-slate-50/80 border-2 border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[var(--primary-dark)] focus:bg-white focus:shadow-lg transition-all text-[15px]"
+                    className="w-full pl-12 pr-4 py-3.5 bg-slate-50/80 border-2 border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-(--primary-dark) focus:bg-white focus:shadow-lg transition-all text-[15px]"
                     placeholder="Current profession"
                   />
                 </div>
@@ -261,7 +264,7 @@ export const AddPatient = ({
                     }
                     onFocus={() => setFocusedField("guardian")}
                     onBlur={() => setFocusedField(null)}
-                    className="w-full px-4 py-3.5 bg-slate-50/80 border-2 border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[var(--primary-dark)] focus:bg-white focus:shadow-lg transition-all text-[15px]"
+                    className="w-full px-4 py-3.5 bg-slate-50/80 border-2 border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-(--primary-dark) focus:bg-white focus:shadow-lg transition-all text-[15px]"
                     placeholder="Legal guardian or parent name"
                   />
                 </div>
@@ -273,13 +276,13 @@ export const AddPatient = ({
         {/* Contact Information Section */}
         <section className="space-y-4">
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[var(--primary-dark)] shadow-sm">
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-(--primary-dark) shadow-sm">
               <Phone className="w-4.5 h-4.5 text-white" strokeWidth={2.5} />
             </div>
             <h3 className="text-sm uppercase tracking-wider font-bold text-slate-700">
               Contact Information
             </h3>
-            <div className="flex-1 h-px bg-gradient-to-r from-slate-300 to-transparent"></div>
+            <div className="flex-1 h-px bg-linear-to-r from-slate-300 to-transparent"></div>
           </div>
 
           <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 p-6 space-y-5 hover:shadow-md transition-shadow">
@@ -292,7 +295,7 @@ export const AddPatient = ({
                 </label>
                 <div className="relative">
                   <div
-                    className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${focusedField === "phone" ? "text-[var(--primary-dark)]" : "text-slate-400"}`}
+                    className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${focusedField === "phone" ? "text-(--primary-dark)" : "text-slate-400"}`}
                   >
                     <Phone className="w-5 h-5" strokeWidth={2} />
                   </div>
@@ -328,7 +331,7 @@ export const AddPatient = ({
                     className={`w-full pl-12 pr-4 py-3.5 bg-slate-50/80 border-2 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:shadow-lg transition-all text-[15px] ${
                       phoneError
                         ? "border-rose-400 focus:border-rose-500"
-                        : "border-slate-200 focus:border-[var(--primary-dark)]"
+                        : "border-slate-200 focus:border-(--primary-dark)"
                     }`}
                     placeholder="03XX-XXXXXXX"
                   />
@@ -348,7 +351,7 @@ export const AddPatient = ({
                 </label>
                 <div className="relative">
                   <div
-                    className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${focusedField === "address" ? "text-[var(--primary-dark)]" : "text-slate-400"}`}
+                    className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${focusedField === "address" ? "text-(--primary-dark)" : "text-slate-400"}`}
                   >
                     <MapPin className="w-5 h-5" strokeWidth={2} />
                   </div>
@@ -359,7 +362,7 @@ export const AddPatient = ({
                     onChange={(e) => handleChange("address", e.target.value)}
                     onFocus={() => setFocusedField("address")}
                     onBlur={() => setFocusedField(null)}
-                    className="w-full pl-12 pr-4 py-3.5 bg-slate-50/80 border-2 border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[var(--primary-dark)] focus:bg-white focus:shadow-lg transition-all text-[15px]"
+                    className="w-full pl-12 pr-4 py-3.5 bg-slate-50/80 border-2 border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-(--primary-dark) focus:bg-white focus:shadow-lg transition-all text-[15px]"
                     placeholder="Complete street address, city, and postal code"
                   />
                 </div>
@@ -371,7 +374,7 @@ export const AddPatient = ({
         {/* Medical Details Section */}
         <section className="space-y-4">
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[var(--primary-dark)] shadow-sm">
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-(--primary-dark) shadow-sm">
               <Stethoscope
                 className="w-4.5 h-4.5 text-white"
                 strokeWidth={2.5}
@@ -380,7 +383,7 @@ export const AddPatient = ({
             <h3 className="text-sm uppercase tracking-wider font-bold text-slate-700">
               Medical Details
             </h3>
-            <div className="flex-1 h-px bg-gradient-to-r from-slate-300 to-transparent"></div>
+            <div className="flex-1 h-px bg-linear-to-r from-slate-300 to-transparent"></div>
           </div>
 
           <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 p-6 hover:shadow-md transition-shadow">
@@ -390,7 +393,7 @@ export const AddPatient = ({
               </label>
               <div className="relative">
                 <div
-                  className={`absolute left-4 top-4 transition-colors ${focusedField === "history" ? "text-[var(--primary-dark)]" : "text-slate-400"}`}
+                  className={`absolute left-4 top-4 transition-colors ${focusedField === "history" ? "text-(--primary-dark)" : "text-slate-400"}`}
                 >
                   <FileText className="w-5 h-5" strokeWidth={2} />
                 </div>
@@ -403,7 +406,7 @@ export const AddPatient = ({
                   }
                   onFocus={() => setFocusedField("history")}
                   onBlur={() => setFocusedField(null)}
-                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50/80 border-2 border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[var(--primary-dark)] focus:bg-white focus:shadow-lg transition-all resize-none text-[15px] leading-relaxed"
+                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50/80 border-2 border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-(--primary-dark) focus:bg-white focus:shadow-lg transition-all resize-none text-[15px] leading-relaxed"
                   placeholder="Allergies, pre-existing conditions, current medications, special considerations..."
                 />
               </div>
@@ -413,7 +416,7 @@ export const AddPatient = ({
       </div>
 
       {/* Footer */}
-      <div className="bg-gradient-to-br from-slate-50 to-white border-t-2 border-slate-200/80 px-8 py-5 flex items-center justify-between">
+      <div className="bg-linear-to-br from-slate-50 to-white border-t-2 border-slate-200/80 px-8 py-5 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></div>
           <p className="text-sm font-medium text-slate-600">
@@ -433,7 +436,7 @@ export const AddPatient = ({
           <button
             type="submit"
             disabled={isPending}
-            className="px-6 py-3 cursor-pointer rounded-xl font-semibold text-white bg-[var(--primary)] hover:bg-[var(--primary-dark)] transition-all shadow-lg active:scale-[0.98] text-[15px] disabled:opacity-70 disabled:cursor-not-allowed"
+            className="px-6 py-3 cursor-pointer rounded-xl font-semibold text-white bg-primary hover:bg-(--primary-dark) transition-all shadow-lg active:scale-[0.98] text-[15px] disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {isPending
               ? "Saving..."
