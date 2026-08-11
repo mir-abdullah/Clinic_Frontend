@@ -17,7 +17,13 @@ export default async function PatientsPage({searchParams}: {searchParams: Promis
     params.set("limit", "10");
     if (search) params.set("search", search);
     
-    const patients =await patientAPI.get(`/all?${params.toString()}`)
+    let patients;
+    try {
+        patients = await patientAPI.get(`/all?${params.toString()}`)
+    } catch (error) {
+        console.warn("[patients] API call failed during build/startup:", error);
+        patients = { data: { items: [], pagination: { totalPages: 1 } } };
+    }
     const totalPages = patients?.data?.pagination?.totalPages || 1; 
 
 

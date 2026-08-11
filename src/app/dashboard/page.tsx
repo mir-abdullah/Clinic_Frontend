@@ -9,6 +9,8 @@ import { appointmentAPI } from "@/utils/api";
 import { visitAPI } from "@/utils/api";
 import { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Dashboard | Mehreen Dental Clinic",
   icons: {
@@ -19,16 +21,25 @@ export const metadata: Metadata = {
 export default async function DashboardPage() {
 
     //api calls
+    let appointmentsToday, numberOfpatientsMonth, monthlyRevenue, last5Visits, todayCount;
     
-
-    const [appointmentsToday, numberOfpatientsMonth, monthlyRevenue, last5Visits, todayCount] = await Promise.all([
-        appointmentAPI.get("/today"),
-        patientAPI.get("/total/count/month"),
-        visitAPI.get("/Monthlystats"),
-        visitAPI.get("/recent/5"),
-        visitAPI.get("/today/count"),
-
-    ]);
+    try {
+        const results = await Promise.all([
+            appointmentAPI.get("/today"),
+            patientAPI.get("/total/count/month"),
+            visitAPI.get("/Monthlystats"),
+            visitAPI.get("/recent/5"),
+            visitAPI.get("/today/count"),
+        ]);
+        [appointmentsToday, numberOfpatientsMonth, monthlyRevenue, last5Visits, todayCount] = results;
+    } catch (error) {
+        console.warn("[dashboard] API calls failed during build/startup:", error);
+        appointmentsToday = { data: { total: 0 } };
+        numberOfpatientsMonth = { data: { totalPatientsThisMonth: 0 } };
+        monthlyRevenue = { data: { totalRevenue: 0 } };
+        last5Visits = { data: [] };
+        todayCount = { data: { count: 0 } };
+    }
  
     const currentDate = new Date();
     const formattedDate = currentDate.toLocaleDateString(undefined, {

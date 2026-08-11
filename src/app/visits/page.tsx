@@ -1,5 +1,4 @@
 import { StatsCard } from "@/components/dashboard/StatsCard";
-import { ReportButton } from "@/components/visits/ReportButton";
 import { VisitTable } from "@/components/visits/VisitTable";
 import { visitAPI } from "@/utils/api";
 import { VisitPagination } from "@/components/visits/VisitsPagination";
