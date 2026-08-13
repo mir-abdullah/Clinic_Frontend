@@ -71,7 +71,7 @@ const initialState: AddPatientActionState = {
       onSuccess(formState.message);
       onClose();
     }
-  }, [formState.status, formState.message]);
+  }, [formState.message, formState.status, onClose, onSuccess]);
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));

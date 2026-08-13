@@ -12,10 +12,12 @@ import { TableButtons } from "./TableButtons";
 import { Patient } from "@/utils/type";
 
 export const PatientTable = ({
-  patientsList,
+  patientsList = [],
 }: {
-  patientsList: Patient[];
+  patientsList?: Patient[];
 }) => {
+  const safePatientsList = Array.isArray(patientsList) ? patientsList : [];
+
   return (
     <Card className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
       <CardContent className="p-6">
@@ -50,10 +52,9 @@ export const PatientTable = ({
           </TableHeader>
 
           <TableBody>
-            {patientsList.map((patient, index) => {
-              const lastVisit = patient?.visits?.[0]?.date
-              const upcomingVisit = patient?.appointments?.[0]?.date
-              
+            {safePatientsList.map((patient, index) => {
+              const lastVisit = patient?.visits?.[0]?.date;
+              const upcomingVisit = patient?.appointments?.[0]?.date;
 
               return (
                 <TableRow
@@ -65,16 +66,14 @@ export const PatientTable = ({
                   </TableCell>
 
                   <TableCell className="py-4">
-                    <div className="font-semibold text-gray-900">
-                      {patient.name}
-                    </div>
+                    <div className="font-semibold text-gray-900">{patient.name}</div>
                   </TableCell>
 
                   <TableCell className="py-4 text-gray-700">
                     {patient.phone || "N/A"}
                   </TableCell>
 
-                  <TableCell className="py-4     text-gray-700 max-w-[220px] truncate">
+                  <TableCell className="py-4 text-gray-700 max-w-[220px] truncate">
                     {patient.address || "N/A"}
                   </TableCell>
 
@@ -85,9 +84,7 @@ export const PatientTable = ({
                   </TableCell>
 
                   <TableCell className="py-4 text-gray-700">
-                    {lastVisit
-                      ? formatDateWithOrdinal(lastVisit)
-                      : "N/A"}
+                    {lastVisit ? formatDateWithOrdinal(lastVisit) : "N/A"}
                   </TableCell>
 
                   <TableCell className="py-4">

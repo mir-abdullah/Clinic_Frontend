@@ -17,7 +17,7 @@ import {
   ScrollText,
   ChevronDown,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect,useCallback } from "react";
 import { appointmentAPI, visitAPI } from "@/utils/api";
 import { Patient, Visit, Appointment } from "@/utils/type";
 import { AddPatient } from "./AddPatient";
@@ -88,7 +88,7 @@ export const ViewPatientModal = ({
   const [editOpen, setEditOpen] = useState(false); // ← controls AddPatient modal
   const [mounted, setMounted] = useState(false); // ← drives entrance transition
 
-  const fetchData = async (patientId: string) => {
+  const fetchData = useCallback(async (patientId: string) => {
     setActiveTab("visits");
     setVisits([]);
     setAppointments([]);
@@ -107,15 +107,26 @@ export const ViewPatientModal = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     if (!open || !patient) return;
-    void (async () => {
+
+    let isMounted = true;
+
+    const loadPatientData = async () => {
       await fetchData(patient.id);
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, patient]);
+      if (!isMounted) {
+        return;
+      }
+    };
+
+    void loadPatientData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [fetchData, open, patient]);
 
   useEffect(() => {
     // schedule mount/unmount state changes on the next animation frame
@@ -139,6 +150,9 @@ export const ViewPatientModal = ({
   const hasExtras = hasGuardian || hasOccupation;
   const theme = avatarTheme(patient.name || "P");
 
+  // Avoid stale dependency warnings while preserving current UX.
+  void hasHistory;
+
   return (
     <>
       {/* ── Edit Patient Modal ── */}
@@ -150,7 +164,7 @@ export const ViewPatientModal = ({
             patient={patient}
             open={editOpen}
             onClose={() => setEditOpen(false)}
-            onSuccess={(message) => {
+            onSuccess={() => {
               setEditOpen(false);
               onEdit(patient); // notify parent so it can refresh the patient list
               toast.success("Patient updated successfully");

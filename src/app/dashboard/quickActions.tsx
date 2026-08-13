@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { QuickActions } from "@/components/dashboard/QuickActions";
 import { Action } from "@/utils/type";
 import { AddPatient } from "@/components/modals/AddPatient";
 import { toast } from "sonner";
-import { redirect } from "next/navigation";
 import { BookAppointment } from "@/components/modals/BookAppointment";
 
 type Props = {
@@ -13,6 +13,7 @@ type Props = {
 };
 
 export function QuickActionsClient({ actions }: Props) {
+  const router = useRouter();
   const [activeModal, setActiveModal] = useState<null | "addPatient" | "bookAppointment">(null);
   const isAddPatientOpen = activeModal === "addPatient";
   const isBookAppointmentOpen = activeModal === "bookAppointment";
@@ -67,8 +68,8 @@ export function QuickActionsClient({ actions }: Props) {
             open={isAddPatientOpen}
             onClose={() => setActiveModal(null)}
             onSuccess={(message) => {
-              toast.success(message)
-              redirect("/patients");
+              toast.success(message);
+              router.push("/patients");
             }}
           />
         </div>

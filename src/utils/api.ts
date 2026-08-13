@@ -26,3 +26,19 @@ export const paymentAPI = axios.create({
 export const reportAPI = axios.create({
   baseURL: `${apiBaseUrl}/api/reports`,
 });
+
+export function getApiErrorMessage(error: unknown, fallback: string): string {
+  if (!axios.isAxiosError(error)) {
+    return fallback;
+  }
+
+  const data = error.response?.data;
+  const message =
+    typeof data === "object" && data !== null && "message" in data
+      ? data.message
+      : undefined;
+
+  return typeof message === "string" && message.trim().length > 0
+    ? message
+    : fallback;
+}

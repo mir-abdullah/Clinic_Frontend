@@ -1,16 +1,17 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { BookAppointment } from "../modals/BookAppointment";
-import { redirect } from "next/navigation";
 
 export const Buttons = () => {
+    const router = useRouter();
     const [isBookAppointmentOpen, setIsBookAppointmentOpen] = useState(false);
 
     return(
          <>
              <div className="flex gap-3 ml-auto">
                 <button
-                    onClick={() => redirect("/reports")}
+                    onClick={() => router.push("/reports")}
                     className={
                         "px-3 h-8 rounded-md text-sm font-medium cursor-pointer inline-flex items-center gap-2 bg-(--bg-primary) text-(--text-primary) border border-border shadow-sm hover:bg-(--primary-dark) hover:text-primary transition ease-in-out duration-150 leading-none"
                     }

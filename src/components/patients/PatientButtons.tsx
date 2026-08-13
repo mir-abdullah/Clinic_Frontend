@@ -1,12 +1,10 @@
 "use client";
-import { useRef, useState ,useCallback} from "react";
-
-import { redirect } from "next/navigation";
+import { useRef, useState, useCallback } from "react";
 import { toast } from "sonner";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
-
 import { AddPatient } from "../modals/AddPatient";
+
 export const PatientButtons = () => {
      const router = useRouter();
       const pathname = usePathname();

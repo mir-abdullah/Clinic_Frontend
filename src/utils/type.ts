@@ -117,7 +117,7 @@ export type  actionState = {
   message: string;
 }
 
-export type  addVisitDTO = {
+export type addVisitDTO = {
   patientId: string;
   doctorName?: string;
   date: string;
@@ -128,8 +128,10 @@ export type  addVisitDTO = {
   notes?: string;
   totalAmount: number;
   paidAmount?: number;
+  dueAmount?: number;
+  paymentStatus?: "PAID" | "PENDING" | "PARTIAL";
   paymentMethod?: "CASH" | "CARD" | "ONLINE";
-}
+};
 
 export type Payment = {
   id: string;
